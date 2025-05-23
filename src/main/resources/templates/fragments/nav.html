@@ -62,13 +62,13 @@
                             </li>
                             <li class="nav-link ">
                                 <a class="nav-link" th:if="${u.hasRole('ENTERPRISE')}"
-                                    th:href="@{/enterprise/enterprise-requests}"
-                                    href="/enterprise/enterprise-requests">Mis solicitudes</a>
+                                    th:href="@{/enterprise/requests}"
+                                    href="/enterprise/requests">Mis solicitudes</a>
                             </li>
                             <li class="nav-link ">
                                 <a class="nav-link" th:if="${u.hasRole('ENTERPRISE')}"
-                                    th:href="@{/enterprise/enterprise-parkings}"
-                                    href="/enterprise/enterprise-parkings">Ver parkings</a>
+                                    th:href="@{/enterprise/parkings}"
+                                    href="/enterprise/parkings">Ver parkings</a>
                             </li>
                             <li class="nav-link ">
                                 <a class="nav-link" th:if="${u.hasRole('ADMIN')}" th:href="@{/admin/}">Administrar</a>
@@ -188,15 +188,20 @@
                         <li><a class="nav-link btn btn-outline-secondary pt-1" th:if="${u.hasRole('USER')}"
                                 th:href="@{/user/map}" href="/user/map">Buscar</a></li>
                         <li><a class="nav-link btn btn-outline-secondary pt-1" th:if="${u.hasRole('ENTERPRISE')}"
+<<<<<<< HEAD
                                 th:href="@{/enterprise/enterprise-reserved-spots}"
                                 href="/enterprise/enterprise-reserved-spots">Mis plazas reservadas</a>
                         </li>
                         <li><a class="nav-link btn btn-outline-secondary pt-1" th:if="${u.hasRole('ENTERPRISE')}"
                                 th:href="@{/enterprise/enterprise-requests}"
                                 href="/enterprise/enterprise-requests">Mis solicitudes</a>
+=======
+                                th:href="@{/enterprise/requests}"
+                                href="/enterprise/requests">Mis solicitudes</a>
+>>>>>>> origin/add-vehicle
                         </li>
                         <li><a class="nav-link btn btn-outline-secondary pt-1" th:if="${u.hasRole('ENTERPRISE')}"
-                                th:href="@{/enterprise/enterprise-parkings}" href="/enterprise/enterprise-parkings">Ver
+                                th:href="@{/enterprise/parkings}" href="/enterprise/parkings">Ver
                                 parkings</a></li>
                         <li><a class="nav-link btn btn-outline-secondary pt-1" th:if="${u.hasRole('ADMIN')}"
                                 th:href="@{/admin/}">Administrar</a></li>

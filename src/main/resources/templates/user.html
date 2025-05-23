@@ -51,46 +51,72 @@
         </form>
 
         <div class="row mb-3">
-          <button class="btn btn-outline-dark w-100" type="submit">Cargar Saldo</button>
+            <div class="col">
+              <button class="btn btn-outline-dark w-100" type="button" data-bs-toggle="modal" data-bs-target="#modalSaldo">Cargar Saldo</button>
+            </div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- <main class="flex-shrink-0">
-      <div id="books" class="border border-2 border-primary rounded">
-        <label for="isbn">ISBN</label><input id="isbn" value="9780140328721" />
-        
-        <button id="fetchBook">Buscar datos online</button>
-        <img class="preview" id="portada" alt="portada del libro" />
-        <form th:action="@{/user/__${user.id}__/pic}">
-            <button id="postPortada" class="perfilable">Usar como foto de perfil</button>
+<!-- Ejemplo de modal -->
+<div class="modal fade" id="modalSaldo" tabindex="-1" aria-labelledby="modalSaldoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-4 shadow">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalSaldoLabel">Cargar saldo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formCargarSaldo" method="post" th:action="@{'/user/' + ${u.id} + '/cargar-saldo'}">
+          <div class="mb-3">
+            <label for="monto" class="form-label">Monto a cargar</label>
+            <input type="number" class="form-control" id="monto" name="monto" min="1" required>
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-primary">Confirmar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
         </form>
+      </div>
     </div>
-    <div id="movies" class="border border-2 border-secondary rounded">
-        <label for="imdb">IMDB</label><input id="imdb" value="tt11286314" />
-        <button id="fetchMovie">Buscar datos online</button>
-        <img class="preview" id="poster" alt="poster de la pelicula" />
-        <form th:action="@{/user/__${user.id}__/pic}">
-            <button id="postPoster" class="perfilable">Usar como foto de perfil</button>
-        </form>
-    </div>
-    
+  </div>
+</div>
 
-    <div class="container">
-        <h1 class="mt-5">Perfil de <span th:text="${user.username}">Paco</span></h1>
-        recepción de mensajes
-          <div class="py-5 row" id="mensajes">
-        </div>
-         envío de mensajes
-        <div class="py-5 row">
-            <form th:action="@{/user/__${user.id}__/msg}" method="POST">
-                <input type="text" id="message" placeholder="escribe a este usuario" />
-                <button id="sendmsg" class="btn btn-secondary" type="submit">Enviar</button>
-            </form>
-        </div>
+
+  <!-- <main class="flex-shrink-0">
+    <div id="books" class="border border-2 border-primary rounded">
+      <label for="isbn">ISBN</label><input id="isbn" value="9780140328721" />
+
+  <button id="fetchBook">Buscar datos online</button>
+  <img class="preview" id="portada" alt="portada del libro" />
+  <form th:action="@{/user/__${user.id}__/pic}">
+    <button id="postPortada" class="perfilable">Usar como foto de perfil</button>
+  </form>
+  </div>
+  <div id="movies" class="border border-2 border-secondary rounded">
+    <label for="imdb">IMDB</label><input id="imdb" value="tt11286314" />
+    <button id="fetchMovie">Buscar datos online</button>
+    <img class="preview" id="poster" alt="poster de la pelicula" />
+    <form th:action="@{/user/__${user.id}__/pic}">
+      <button id="postPoster" class="perfilable">Usar como foto de perfil</button>
+    </form>
+  </div>
+
+
+  <div class="container">
+    <h1 class="mt-5">Perfil de <span th:text="${user.username}">Paco</span></h1>
+    recepción de mensajes
+    <div class="py-5 row" id="mensajes">
     </div>
+    envío de mensajes
+    <div class="py-5 row">
+      <form th:action="@{/user/__${user.id}__/msg}" method="POST">
+        <input type="text" id="message" placeholder="escribe a este usuario" />
+        <button id="sendmsg" class="btn btn-secondary" type="submit">Enviar</button>
+      </form>
+    </div>
+  </div>
   </main> -->
   </div>
 

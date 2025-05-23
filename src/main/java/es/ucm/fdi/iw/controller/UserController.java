@@ -12,6 +12,7 @@ import es.ucm.fdi.iw.model.Spot;
 import es.ucm.fdi.iw.model.Transferable;
 import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.Vehicle;
+import es.ucm.fdi.iw.model.Message.Type;
 import es.ucm.fdi.iw.model.User.Role;
 import io.micrometer.common.lang.Nullable;
 
@@ -112,28 +113,21 @@ public class UserController {
 		return parker != null;
 	}
 
-	@GetMapping("/buscar-parking")
-	public String buscarParking(Model model, HttpSession session) {
-		if (isParker(session)) {
-			List<Parking> parkings = entityManager.createNamedQuery("Parking.findByEnabled", Parking.class)
-					.setParameter("enabled", true).getResultList();
-
-			List<Parking.Transfer> transferParkings = new ArrayList<>();
-
-			for (Parking p : parkings) {
-				transferParkings.add(p.toTransfer());
-			}
-
-			model.addAttribute("parkings", transferParkings);
-			model.addAttribute("radius", 3000);
-
-			return "search";
-		} else {
-			return "login";
-		}
-	}
-
-	// El return es por la vista que devuelve.
+	/**
+	 * Muestra un mapa con parkings disponibles según fechas, horas y ubicación.
+	 *
+	 * @param startDate Fecha de inicio de la reserva.
+	 * @param endDate   Fecha de fin de la reserva.
+	 * @param startTime Hora de inicio de la reserva .
+	 * @param endTime   Hora de fin de la reserva.
+	 * @param latitude  Latitud para filtrar parkings.
+	 * @param longitude Longitud para filtrar parkings.
+	 * @param radius    Radio de búsqueda en metros .
+	 * @param session   Sesión HTTP del usuario.
+	 * @param model     Modelo para la vista.
+	 * @return Nombre de la vista "map" o "login" si no está autenticado como
+	 *         Parker.
+	 */
 	@GetMapping("/map")
 	public String map(
 			@RequestParam @Nullable LocalDate startDate, @RequestParam @Nullable LocalDate endDate,
@@ -147,10 +141,10 @@ public class UserController {
 		if (isParker(session)) {
 			List<Parking> parkings = entityManager.createNamedQuery("Parking.findByEnabled", Parking.class)
 					.setParameter("enabled", true).getResultList();
-					
+
 			LocalDate today = LocalDate.now();
 			LocalTime timeNow = LocalTime.now();
-					
+
 			log.info("generando transfers de parkings");
 			List<Transfer> transferParkings = new ArrayList<>();
 
@@ -197,6 +191,20 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * Muestra la página para reservar una plaza en un parking específico.
+	 *
+	 * @param model        Modelo para la vista.
+	 * @param session      Sesión HTTP del usuario.
+	 * @param id           ID del parking.
+	 * @param selectedSlot Plaza seleccionada (opcional).
+	 * @param vehicleId    ID del vehículo seleccionado (opcional).
+	 * @param startDate    Fecha de inicio de la reserva (opcional).
+	 * @param endDate      Fecha de fin de la reserva (opcional).
+	 * @param startTime    Hora de inicio de la reserva (opcional).
+	 * @param endTime      Hora de fin de la reserva (opcional).
+	 * @return Nombre de la vista "reserve" o "error" si el parking no es válido.
+	 */
 	@GetMapping("/reserve/{id}")
 	public String reserve(Model model,
 			HttpSession session,
@@ -231,24 +239,19 @@ public class UserController {
 		return "reserve";
 	}
 
-	@GetMapping("/confirm-select-parking/{id}")
-	public String confirmSelectParking(@PathVariable long id,
-			@RequestParam Integer selectedSlot,
-			@RequestParam(required = false) Long vehicleId,
-			@RequestParam @Nullable String startDate, @RequestParam @Nullable String endDate,
-			@RequestParam @Nullable String startTime, @RequestParam @Nullable String endTime,
-			RedirectAttributes redirectAttributes) {
-		redirectAttributes.addAttribute("selectedSlot", selectedSlot);
-		redirectAttributes.addAttribute("startDate", startDate);
-		redirectAttributes.addAttribute("endDate", endDate);
-		redirectAttributes.addAttribute("startTime", startTime);
-		redirectAttributes.addAttribute("endTime", endTime);
-		redirectAttributes.addAttribute("id", id);
-		redirectAttributes.addAttribute("vehicleId", vehicleId);
-
-		return "redirect:/user/reserve/" + id;
-	}
-
+	/**
+	 * Muestra la página para seleccionar una plaza de parking.
+	 *
+	 * @param id           ID del parking.
+	 * @param selectedSlot Plaza seleccionada.
+	 * @param vehicleId    ID del vehículo seleccionado.
+	 * @param startDate    Fecha de inicio de la reserva.
+	 * @param endDate      Fecha de fin de la reserva.
+	 * @param startTime    Hora de inicio de la reserva.
+	 * @param endTime      Hora de fin de la reserva.
+	 * @param model        Modelo para la vista.
+	 * @return Nombre de la vista "select-parking.html".
+	 */
 	@GetMapping("/select-parking/{id}")
 	public String selectParkingView(@PathVariable long id,
 			@RequestParam(required = false) Integer selectedSlot,
@@ -293,57 +296,99 @@ public class UserController {
 		return "select-parking";
 	}
 
-	@GetMapping("/add-vehicle")
+	/**
+	 * Añade un vehículo al usuario y redirige a la página de reserva.
+	 *
+	 * @param model              Modelo para la vista.
+	 * @param session            Sesión HTTP del usuario.
+	 * @param parkingId          ID del parking (opcional).
+	 * @param selectedSlot       Plaza seleccionada (opcional).
+	 * @param vehicleId          ID del vehículo seleccionado (opcional).
+	 * @param startDate          Fecha de inicio de la reserva (opcional).
+	 * @param endDate            Fecha de fin de la reserva (opcional).
+	 * @param startTime          Hora de inicio de la reserva (opcional).
+	 * @param endTime            Hora de fin de la reserva (opcional).
+	 * @param brand              Marca del vehículo.
+	 * @param modelo             Modelo del vehículo.
+	 * @param plate              Matrícula del vehículo.
+	 * @param size               Tamaño del vehículo.
+	 * @param redirectAttributes Atributos para la redirección.
+	 * @return Nombre de la vista "reserve" o "login" si no está autenticado como
+	 *         Parker.
+	 */
+	@PostMapping("/add-vehicle")
+	@Transactional
+	@ResponseBody
 	public String addVehicle(
 			Model model,
 			HttpSession session,
-			@RequestParam(required = false) String parkingId,
-			@RequestParam(required = false) Integer selectedSlot,
-			@RequestParam(required = false) Long vehicleId,
-			@RequestParam @Nullable String startDate, @RequestParam @Nullable String endDate,
-			@RequestParam @Nullable String startTime, @RequestParam @Nullable String endTime,
-			@RequestParam String brand,
-			@RequestParam String modelo,
-			@RequestParam String plate,
-			@RequestParam String size,
-			RedirectAttributes redirectAttributes) {
-		Long id = Long.parseLong(parkingId);
-		// redirectAttributes.addAttribute("selectedSlot", selectedSlot);
-		// redirectAttributes.addAttribute("startDate", startDate);
-		// redirectAttributes.addAttribute("endDate", endDate);
-		// redirectAttributes.addAttribute("startTime", startTime);
-		// redirectAttributes.addAttribute("endTime", endTime);
-		// redirectAttributes.addAttribute("id", id);
-		// redirectAttributes.addAttribute("vehicleId", vehicleId);
-		if (isParker(session)) {
-			Parker parker = (Parker) session.getAttribute("u");
-			List<Vehicle> vehicles = parker.getVehicles();
-			Vehicle v = new Vehicle();
-			v.setBrand(brand);
-			v.setEnabled(true);
-			v.setModel(modelo);
-			v.setPlate(plate);
-			v.setSize(size);
-			v.setParker(parker);
-			vehicles.add(v);
-			parker.setVehicles(vehicles);
-			return reserve(model, session, id, selectedSlot, vehicleId, startDate, endDate, startTime, endTime);
-		} else
-			return "login";
+			@RequestBody JsonNode requestData) {
+		
+		try {
+			String brand = requestData.get("brand").asText();
+			String modelo = requestData.get("modelo").asText();
+			String plate = requestData.get("plate").asText();
+			String size = requestData.get("size").asText();
+
+			if (isParker(session)) {
+				Parker parker = (Parker) session.getAttribute("u");
+				// List<Vehicle> vehicles = parker.getVehicles();
+				// log.info(vehicles);
+				List<Vehicle> vExistente = entityManager.createNamedQuery("Vehicle.findByplate")
+				.setParameter("plate", plate)
+				.getResultList();
+
+				if (vExistente.size() > 0){
+					model.addAttribute("error", "La matrícula ya existe");
+					return "{\"error\": \"Ya existe un vehículo con esa matrícula\"}";
+				}
+				
+				Vehicle v = new Vehicle();
+				
+				v.setBrand(brand);
+				v.setEnabled(true);
+				v.setModel(modelo);
+				v.setPlate(plate);
+				v.setSize(size);
+				v.setParker(parker);
+				
+				log.info("añadiendo vehiculo " + v.getPlate());
+
+				entityManager.persist(v);
+				return "{\"result\": \"Vehículo creado con éxito\"}";
+			} else
+				return "login";
+
+		} catch (Exception e) {
+			log.error("Error al procesar la solicitud", e);
+			return "{\"error\": \"Error al procesar la solicitud\"}";
+		}
 	}
 
+	/**
+	 * Notifica a la empresa sobre una nueva reserva mediante un mensaje.
+	 *
+	 * @param user    Usuario que realiza la reserva.
+	 * @param reserve Reserva realizada.
+	 * @param parking Parking asociado a la reserva.
+	 * @throws JsonProcessingException Si ocurre un error al serializar el mensaje a
+	 *                                 JSON.
+	 */
 	private void notificarReserva(User user, Reserve reserve, Parking parking) {
-		Message m = new Message();
-		Enterprise enterprise = parking.getEnterprise();
-		m.setRecipient(enterprise);
-		m.setSender(user);
-		m.setDateSent(LocalDateTime.now());
-		m.setText("Se ha realizado una reserva en " + parking.getName() + " desde " + reserve.getStartDate() + " a "
-				+ reserve.getEndDate() + " de " + reserve.getStartTime() + " a " + reserve.getEndTime());
-		entityManager.persist(m);
-		entityManager.flush(); // to get Id before commit
-		ObjectMapper mapper = new ObjectMapper();
 		try {
+			Message m = new Message();
+			Enterprise enterprise = parking.getEnterprise();
+			m.setRecipient(enterprise);
+			m.setSender(user);
+			m.setDateSent(LocalDateTime.now());
+			
+			ObjectMapper mapper = new ObjectMapper();
+			// Ejemplo de pasar un JSON como cuerpo del mensaje
+			m.setText(mapper.writeValueAsString(reserve.toTransfer()));
+			System.out.println(m.getText());
+			m.setType(Type.ACTUALIZAR);
+			entityManager.persist(m);
+			entityManager.flush(); // to get Id before commit
 			String json = mapper.writeValueAsString(m.toTransfer());
 			messagingTemplate.convertAndSend("/enterprise/" + enterprise.getId() + "/queue/updates", json);
 		} catch (JsonProcessingException e) {
@@ -351,6 +396,22 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * Procesa la creación de una reserva y actualiza la cartera del usuario.
+	 *
+	 * @param startDate           Fecha de inicio de la reserva.
+	 * @param endDate             Fecha de fin de la reserva.
+	 * @param startTime           Hora de inicio de la reserva.
+	 * @param endTime             Hora de fin de la reserva.
+	 * @param vehicleId           ID del vehículo seleccionado.
+	 * @param parkingId           ID del parking.
+	 * @param totalPrice          Precio total de la reserva.
+	 * @param selectedParkingSpot ID de la plaza seleccionada.
+	 * @param model               Modelo para la vista.
+	 * @param redirectAttributes  Atributos para la redirección.
+	 * @return Nombre de la vista "my-reserves" o redirección a "reserve" o "error"
+	 *         en caso de error.
+	 */
 	@PostMapping("/confirm-reserve")
 	@Transactional
 	public String postReserve(
@@ -428,6 +489,7 @@ public class UserController {
 			user.setWallet(wallet);
 			User userBD = entityManager.find(User.class, user.getId());
 			userBD.setWallet(wallet);
+			// avisamos a la empresa
 			notificarReserva(target, reserve, spot.getParking());
 			model.addAttribute("success", "Reserva realizada con éxito");
 		} catch (Exception e) {
@@ -438,11 +500,23 @@ public class UserController {
 		return myReserves(model);
 	}
 
+	/**
+	 * Muestra la página para modificar una reserva.
+	 *
+	 * @param model Modelo para la vista.
+	 * @return Nombre de la vista "modify-reserve".
+	 */
 	@GetMapping("/modify-reserve")
 	public String modifyReserve(Model model) {
 		return "modify-reserve";
 	}
 
+	/**
+	 * Muestra las reservas del usuario autenticado.
+	 *
+	 * @param model Modelo para la vista.
+	 * @return Nombre de la vista "my-reserves" o "error" si no es un Parker.
+	 */
 	@GetMapping("/my-reserves")
 	public String myReserves(Model model) {
 
@@ -472,11 +546,20 @@ public class UserController {
 		return "my-reserves";
 	}
 
+	/**
+	 * Cancela una reserva y actualiza las carteras del usuario y la empresa.
+	 *
+	 * @param id    ID de la reserva a cancelar.
+	 * @param model Modelo para la vista.
+	 * @return Nombre de la vista "my-reserves" o "error" si la reserva no es
+	 *         válida.
+	 */
 	@PostMapping("/cancel-reserve/{id}")
 	@Transactional
 	public String cancelReserve(@PathVariable long id, Model model) {
 		Reserve reserve = entityManager.find(Reserve.class, id);
 		if (reserve != null && reserve.getState() == Reserve.State.CONFIRMED) {
+			// Actualizamos el saldo tanto en la base de datos como en la sesión
 			User user = reserve.getVehicle().getParker();
 			User sessionUser = (User) model.getAttribute("u");
 
@@ -505,12 +588,22 @@ public class UserController {
 		return myReserves(model);
 	}
 
+	/**
+	 * Notifica a la empresa sobre la cancelación de una reserva.
+	 *
+	 * @param user       Usuario que cancela la reserva.
+	 * @param reserve    Reserva cancelada.
+	 * @param enterprise Empresa asociada al parking.
+	 * @throws JsonProcessingException Si ocurre un error al serializar el mensaje a
+	 *                                 JSON.
+	 */
 	private void notificarCancelacionReserva(User user, Reserve reserve, Enterprise enterprise) {
 		Message m = new Message();
 		m.setRecipient(enterprise);
 		m.setSender(user);
 		m.setDateSent(LocalDateTime.now());
-		m.setText("El usuario " + user.getUsername() + "ha cancelado una reserva en " + reserve.getSpot().getParking().getName() + " desde "
+		m.setText("El usuario " + user.getUsername() + "ha cancelado una reserva en "
+				+ reserve.getSpot().getParking().getName() + " desde "
 				+ reserve.getStartDate() + " a " + reserve.getEndDate() + " de " + reserve.getStartTime() + " a "
 				+ reserve.getEndTime());
 		entityManager.persist(m);
@@ -562,7 +655,12 @@ public class UserController {
 	}
 
 	/**
-	 * Landing page for a user profile
+	 * Muestra la página de perfil de un usuario.
+	 *
+	 * @param id      ID del usuario.
+	 * @param model   Modelo para la vista.
+	 * @param session Sesión HTTP del usuario.
+	 * @return Nombre de la vista "user".
 	 */
 	@GetMapping("{id}")
 	public String index(@PathVariable long id, Model model, HttpSession session) {
@@ -573,7 +671,18 @@ public class UserController {
 	}
 
 	/**
-	 * Alter or create a user
+	 * Crea o modifica un usuario.
+	 *
+	 * @param response Respuesta HTTP.
+	 * @param id       ID del usuario a modificar (-1 para crear uno nuevo).
+	 * @param edited   Objeto con los datos editados del usuario.
+	 * @param pass2    Confirmación de la contraseña (opcional).
+	 * @param model    Modelo para la vista.
+	 * @param session  Sesión HTTP del usuario.
+	 * @return Nombre de la vista "user".
+	 * @throws IOException           Si ocurre un error de entrada/salida.
+	 * @throws NoEsTuPerfilException Si el usuario no tiene permisos para modificar
+	 *                               el perfil.
 	 */
 	@PostMapping("/{id}")
 	@Transactional
@@ -640,11 +749,11 @@ public class UserController {
 	}
 
 	/**
-	 * Downloads a profile pic for a user id
-	 * 
-	 * @param id
-	 * @return
-	 * @throws IOException
+	 * Descarga la imagen de perfil de un usuario.
+	 *
+	 * @param id ID del usuario.
+	 * @return Cuerpo de respuesta con el flujo de la imagen.
+	 * @throws IOException Si ocurre un error de entrada/salida.
 	 */
 	@GetMapping("{id}/pic")
 	public StreamingResponseBody getPic(@PathVariable long id) throws IOException {
@@ -654,11 +763,16 @@ public class UserController {
 	}
 
 	/**
-	 * Uploads a profile pic for a user id
-	 * 
-	 * @param id
-	 * @return
-	 * @throws IOException
+	 * Sube una nueva imagen de perfil para un usuario.
+	 *
+	 * @param photo    Archivo de la imagen.
+	 * @param id       ID del usuario.
+	 * @param response Respuesta HTTP.
+	 * @param session  Sesión HTTP del usuario.
+	 * @param model    Modelo para la vista.
+	 * @return Respuesta JSON con el estado de la subida.
+	 * @throws IOException           Si ocurre un error de entrada/salida.
+	 * @throws NoEsTuPerfilException Si el usuario no tiene permisos.
 	 */
 	@PostMapping("{id}/pic")
 	@ResponseBody
@@ -692,6 +806,14 @@ public class UserController {
 		return "{\"status\":\"photo uploaded correctly\"}";
 	}
 
+	/**
+	 * Actualiza la imagen de perfil de un usuario.
+	 *
+	 * @param id   ID del usuario.
+	 * @param file Archivo de la imagen.
+	 * @return Mapa con la URL de la nueva imagen.
+	 * @throws RuntimeException Si ocurre un error al guardar la imagen.
+	 */
 	@PostMapping("/user/{id}/pic")
 	@ResponseBody
 	public Map<String, String> updateProfilePic(@PathVariable long id, @RequestParam("file") MultipartFile file) {
@@ -708,6 +830,14 @@ public class UserController {
 		return Map.of("newPicUrl", newPicUrl);
 	}
 
+	/**
+	 * Muestra una página de error genérica.
+	 *
+	 * @param model   Modelo para la vista.
+	 * @param session Sesión HTTP del usuario.
+	 * @param request Petición HTTP.
+	 * @return Nombre de la vista "error".
+	 */
 	@GetMapping("error")
 	public String error(Model model, HttpSession session, HttpServletRequest request) {
 		model.addAttribute("sess", session);
@@ -716,7 +846,10 @@ public class UserController {
 	}
 
 	/**
-	 * Returns JSON with all received messages
+	 * Recupera todos los mensajes recibidos por el usuario en formato JSON.
+	 *
+	 * @param session Sesión HTTP del usuario.
+	 * @return Lista de mensajes en formato Transfer.
 	 */
 	@GetMapping(path = "received", produces = "application/json")
 	@Transactional // para no recibir resultados inconsistentes
@@ -730,8 +863,11 @@ public class UserController {
 	}
 
 	/**
-	 * Returns JSON with count of unread messages
-	 */
+     * Devuelve el número de mensajes no leídos en formato JSON.
+     *
+     * @param session Sesión HTTP del usuario.
+     * @return JSON con el número de mensajes no leídos.
+     */
 	@GetMapping(path = "unread", produces = "application/json")
 	@ResponseBody
 	public String checkUnread(HttpSession session) {
@@ -744,12 +880,15 @@ public class UserController {
 	}
 
 	/**
-	 * Posts a message to a user.
-	 * 
-	 * @param id of target user (source user is from ID)
-	 * @param o  JSON-ized message, similar to {"message": "text goes here"}
-	 * @throws JsonProcessingException
-	 */
+     * Envía un mensaje a un usuario.
+     *
+     * @param id ID del usuario destinatario.
+     * @param o Nodo JSON con el contenido del mensaje.
+     * @param model Modelo para la vista.
+     * @param session Sesión HTTP del usuario.
+     * @return Respuesta JSON con el estado del envío.
+     * @throws JsonProcessingException Si ocurre un error al serializar el mensaje.
+     */
 	@PostMapping("/{id}/msg")
 	@ResponseBody
 	@Transactional
@@ -769,6 +908,8 @@ public class UserController {
 		m.setSender(sender);
 		m.setDateSent(LocalDateTime.now());
 		m.setText(text);
+		m.setType(Type.MOSTRAR);
+
 		entityManager.persist(m);
 		entityManager.flush(); // to get Id before commit
 
@@ -790,4 +931,31 @@ public class UserController {
 		messagingTemplate.convertAndSend("/user/" + u.getUsername() + "/queue/updates", json);
 		return "{\"result\": \"message sent.\"}";
 	}
+
+	/**
+     * Añade saldo a la cartera del usuario.
+     *
+     * @param id ID del usuario.
+     * @param session Sesión HTTP del usuario.
+     * @param model Modelo para la vista.
+     * @param monto Cantidad a añadir.
+     * @return Redirección al perfil del usuario.
+     */
+	@PostMapping("/{id}/cargar-saldo")
+	@Transactional
+	public String cargarSaldo(@PathVariable long id, HttpSession session, Model model,
+			@RequestParam("monto") double monto) {
+
+		User user = entityManager.find(User.class, id);
+
+		if (monto > 0) {
+			User sessionUser = (User) model.getAttribute("u");
+			sessionUser.setWallet(sessionUser.getWallet() + monto);
+
+			user.setWallet(user.getWallet() + monto);
+		}
+
+		return "redirect:/user/" + user.getId();
+	}
+
 }

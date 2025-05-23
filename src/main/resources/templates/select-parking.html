@@ -65,7 +65,7 @@
                 let endDate = document.getElementById("endDate").value;
                 let startTime = document.getElementById("startTime").value;
                 let endTime = document.getElementById("endTime").value;
-                window.location.href = `/user/confirm-select-parking/${id}?&selectedSlot=${selectedSlot}&startDate=${startDate}&endDate=${endDate}&startTime=${startTime}&endTime=${endTime}&vehicleId=${vehicleId}`;
+                window.location.href = `/user/reserve/${id}?&selectedSlot=${selectedSlot}&startDate=${startDate}&endDate=${endDate}&startTime=${startTime}&endTime=${endTime}&vehicleId=${vehicleId}`;
 
             } else {
                 alert("Por favor, selecciona una plaza.");

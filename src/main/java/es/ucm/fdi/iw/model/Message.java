@@ -2,8 +2,10 @@ package es.ucm.fdi.iw.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import jakarta.persistence.*;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,6 +45,13 @@ public class Message implements Transferable<Message.Transfer> {
 	@ManyToOne(optional = true)
 	private User recipient;
 	private String text;
+
+	public enum Type {
+        MOSTRAR, ACTUALIZAR
+    }
+
+    @Enumerated(EnumType.STRING)
+    private Type type;
 	
 	private LocalDateTime dateSent;
 	private LocalDateTime dateRead;
@@ -58,6 +67,7 @@ public class Message implements Transferable<Message.Transfer> {
 		private String to;
 		private String sent;
 		private String received;
+		private String type;
 		private String text;
 		long id;
 		public Transfer(Message m) {
@@ -68,14 +78,17 @@ public class Message implements Transferable<Message.Transfer> {
 					null : DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(m.getDateRead());
 			this.text = m.getText();
 			this.id = m.getId();
+			this.type = m.type.toString();
 		}
 	}
 
 	@Override
 	public Transfer toTransfer() {
-		return new Transfer(sender.getUsername(),  recipient == null ? null : recipient.getUsername(), 
+		return new Transfer(
+			sender.getUsername(),  
+			recipient == null ? null : recipient.getUsername(), 
 			DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateSent),
-			dateRead == null ? null : DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateRead),
+			dateRead == null ? null : DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateRead), type.toString(),
 			text, id
         );
     }

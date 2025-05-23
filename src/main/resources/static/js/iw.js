@@ -192,7 +192,7 @@ function postImage(img, endpoint, name, filename) {
 }
 
 /**
- * Actions to perform once the page is fully loaded
+ * Ejemplo de los canales de websockets
  */
 document.addEventListener("DOMContentLoaded", () => {
     if (config.socketUrl) {

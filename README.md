@@ -54,11 +54,11 @@ La aplicación cuenta con varias vistas que dependiendo de si el usuario es part
 
 #### 🔹 Ver Parkings
 > **Descripción:** Visualizar los parkings que la empresa tiene registrados.
-> **URL:** [`/enterprise/enterprise-parkings`](http://localhost:8080/enterprise/enterprise-parkings)
+> **URL:** [`/enterprise/parkings`](http://localhost:8080/enterprise/parkings)
 
 #### 🔹 Ver Plazas
 > **Descripción:** Visualizar las plazas de aparcamiento que la empresa tiene registradas.
-> **URL:** [`/enterprise/enterprise-plazas`](http://localhost:8080/enterprise/enterprise-plazas)
+> **URL:** [`/enterprise/parking/{parkingId}/plazas`](http://localhost:8080/enterprise/parking/977/plazas)
 
 #### 🔹 Añadir Parking
 > **Descripción:** Añadir una zona nueva de aparcamiento en la empresa.
@@ -66,7 +66,7 @@ La aplicación cuenta con varias vistas que dependiendo de si el usuario es part
 
 #### 🔹 Mis solicitudes
 > **Descripción:** Añadir una zona nueva de aparcamiento en la empresa.
-> **URL:** [`/enterprise/enterprise-requests`](http://localhost:8080/enterprise/enterprise-requests)
+> **URL:** [`/enterprise/requests`](http://localhost:8080/enterprise/requests)
 
 ### 1.3. Vistas de Admin
 #### 🔹 Añadir Parking
@@ -126,7 +126,10 @@ La aplicación cuenta con varias vistas que dependiendo de si el usuario es part
 <a name="item3"></a>
 ## 📌 Uso
 
-1. Iniciar sesión.
+1. Iniciar sesión con uno de los usuarios existentes.
+> Usuario: "a". Contraseña: "aa" (para Usuario Admin)  
+> Usuario: "b" Contraseña:"aa" (para Usuario Parker)  
+> Usuario: "e" Contraseña: "aa"   (para Usuario Empresa)  
 2. Buscar un aparcamiento disponible en el mapa interactivo.
 3. Reservar una plaza del parking para unas fechas concretas.
 4. Ver reservas y gestionarlas.
@@ -149,6 +152,8 @@ La aplicación cuenta con varias vistas que dependiendo de si el usuario es part
 A continuación, se muestra la estructura de la base de datos utilizada en el proyecto:
 
 <img src="bd.png" alt="Estructura de la Base de Datos" width="800"/>
+
+Utilizamos el archivo StartupConfig.java para generar una base de datos de ejemplo.
 
 ### Notificaciones
 ![WebSockets](https://img.shields.io/badge/websockets-%23009688.svg?style=for-the-badge&logo=websocket&logoColor=white)

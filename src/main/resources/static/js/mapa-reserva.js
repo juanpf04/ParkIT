@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let horaFin=document.getElementById("fin-h").value;
 
         // if (!fechaInicio || !fechaFin || !horaInicio || !horaFin) {
-        //     errorMsg.textContent = "⚠️ Todos los campos de fecha y hora son obligatorios.";
+        //     errorMsg.textContent = " Todos los campos de fecha y hora son obligatorios.";
         //     document.getElementById("totalPrecio").textContent = "0.00";
         //     return;
         // }
@@ -89,9 +89,45 @@ document.addEventListener("DOMContentLoaded", function () {
         let model = document.getElementById("model").value;
         let plate = document.getElementById("plate").value;
         let size = document.getElementById("size").value;
-        window.location.href = `/user/add-vehicle?&parkingId=${id}&startDate=${startDate}&endDate=${endDate}&startTime=${startTime}&endTime=${endTime}&vehicleId=${vehicleId}&selectedSlot=${selectedSlot}&brand=${brand}&modelo=${model}&plate=${plate}&size=${size}`;
+        // window.location.href = `/user/add-vehicle?&parkingId=${id}&startDate=${startDate}&endDate=${endDate}&startTime=${startTime}&endTime=${endTime}&vehicleId=${vehicleId}&selectedSlot=${selectedSlot}&brand=${brand}&modelo=${model}&plate=${plate}&size=${size}`;
         
-    });
+        // Ejemplo de GO
+        go("/user/add-vehicle", 'POST', {
+            brand: brand,
+            modelo: model,
+            plate: plate,
+            size: size
+        }).then(function (response) {
+            if (response.result) {
+                window.location.href = `/user/reserve/${id}?&startDate=${startDate}&endDate=${endDate}&startTime=${startTime}&endTime=${endTime}&vehicleId=${vehicleId}&selectedSlot=${selectedSlot}`;
+            } else if (response.error) {
+                let errorDiv = document.getElementById("error");
+                errorDiv.textContent = response.error;
+            }
+        }).catch(function (error) {
+            console.error('Error:', error);
+        });
+
+        // Ejemplo de fetch
+        // console.log("Entra en el fetch");
+        // fetch("/user/add-vehicle", {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //         "X-CSRF-TOKEN": config.csrf.value
+        //     },
+        //     body: JSON.stringify({
+        //         brand: brand,
+        //         modelo: model,
+        //         plate: plate,
+        //         size: size
+        //     })
+        // }).then(function (response) {
+        //     window.location.href = `/user/reserve/${id}?&startDate=${startDate}&endDate=${endDate}&startTime=${startTime}&endTime=${endTime}&vehicleId=${vehicleId}&selectedSlot=${selectedSlot}`;
+        // }).catch(function (error) {
+        //     console.error('Error:', error);
+        // });
+    }); 
 });
 
 document.querySelector("form").addEventListener("submit", function(event) {

@@ -37,6 +37,7 @@ import es.ucm.fdi.iw.model.Reserve;
 import es.ucm.fdi.iw.model.Spot;
 import es.ucm.fdi.iw.model.Transferable;
 import es.ucm.fdi.iw.model.User;
+import es.ucm.fdi.iw.model.Message.Type;
 import es.ucm.fdi.iw.model.Admin;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
@@ -74,6 +75,12 @@ public class AdminController {
         return "admin";
     }
 
+    /**
+     * Carga la vista de solicitudes de añadir parkings.
+     *
+     * @param model Modelo para la vista.
+     * @return Redirección a la vista de solicitudes de añadir parkings.
+     */
     @GetMapping("/request-add")
     public String adminRequestAdd(Model model) {
         List<Request> requests = entityManager
@@ -87,6 +94,15 @@ public class AdminController {
         return "request-add";
     }
 
+    /**
+     * Guarda el parking al aceptar la solicitud de a.
+     *
+     * @param id ID de la request.
+     * @param latitud Latitud del parking.
+     * @param longitud Longitud del parking.
+     * @param session Sesión HTTP del usuario.
+     * @return Actualiza la vista con un modal de éxito o error.
+     */
     @PostMapping("/guardarParking/{id}")
     @ResponseBody
     @Transactional
@@ -148,12 +164,20 @@ public class AdminController {
         }
     }
 
+    /**
+     * Notificar si se ha aceptado la solicitud de añadir o eliminar
+     *
+     * @param admin Administrador que envía el mensaje
+     * @param parking Parking que se añade o se elimina
+     * @param request Solicitud de añadir o eliminar.
+     */
     private void notificarEstadoParking(Admin admin, Parking parking, Request request) {
         Message m = new Message();
         Enterprise enterprise = parking.getEnterprise();
         m.setRecipient(enterprise);
         m.setSender(admin);
         m.setDateSent(LocalDateTime.now());
+        m.setType(Type.MOSTRAR);
         if (request.getType().equals("AÑADIR")) {
             m.setText("Se ha aceptado la solicitud de añadir el parking " + parking.getName() + " en la dirección "
                     + parking.getAddress());
@@ -173,6 +197,13 @@ public class AdminController {
         }
     }
 
+    /**
+     * Elimina el parking al aceptar la solicitud de eliminar.
+     *
+     * @param id ID de la request.
+     * @param session Sesión HTTP del usuario.
+     * @return Actualiza la vista con un modal de éxito o error.
+     */
     @PostMapping("/eliminarParking/{id}")
     @ResponseBody
     @Transactional
@@ -207,6 +238,13 @@ public class AdminController {
         }
     }
 
+    /**
+     * Elimina la request al rechazarla.
+     *
+     * @param id ID de la request.
+     * @param session Sesión HTTP del usuario.
+     * @return Actualiza la vista con un modal de éxito o error.
+     */
     @DeleteMapping("/eliminarRequest/{id}")
     @ResponseBody
     @Transactional
@@ -232,12 +270,19 @@ public class AdminController {
         }
     }
 
+    /**
+     * Notificar si se ha rechazado la solicitud de añadir o eliminar
+     *
+     * @param admin Administrador que envía el mensaje
+     * @param request Solicitud de añadir o eliminar.
+     */
     private void notificarEliminarRequest(Admin admin, Request request) {
         Message m = new Message();
         Enterprise enterprise = request.getEnterprise();
         m.setRecipient(enterprise);
         m.setSender(admin);
         m.setDateSent(LocalDateTime.now());
+        m.setType(Type.MOSTRAR);
         if (request.getType().equals("AÑADIR")) {
             m.setText("Se ha rechazado la solicitud de añadir el parking " + request.getName() + " en la dirección "
                     + request.getAddress());
@@ -257,6 +302,12 @@ public class AdminController {
         }
     }
 
+    /**
+     * Carga la vista de solicitudes de eliminar parkings.
+     *
+     * @param model Modelo para la vista.
+     * @return Redirección a la vista de solicitudes de eliminar parkings.
+     */
     @GetMapping("/request-delete")
     public String adminRequestDelete(Model model) {
         List<Request> requests = entityManager

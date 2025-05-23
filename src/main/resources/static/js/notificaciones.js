@@ -33,40 +33,62 @@ if(config.user){
         if(ms.length === 0) {
             dropdownMenu.appendChild(sinNotis);
         }else {
-        ms.forEach(m => dropdownMenu.appendChild(renderNoti(m)))
+            ms.forEach(m => dropdownMenu.appendChild(renderNoti(m)))
         }
-    
+        
     });
 }else if(config.enterprise){
     go(config.rootUrl + "/enterprise/received", "GET").then(ms =>{
         if(ms.length === 0) {
             dropdownMenu.appendChild(sinNotis);
         }else {
-        ms.forEach(m => dropdownMenu.appendChild(renderNoti(m)))
+            ms.forEach(m => dropdownMenu.appendChild(renderNoti(m)))
         }
-    
+        
     });
 }else if(config.admin){
     go(config.rootUrl + "/admin/received", "GET").then(ms =>{
         if(ms.length === 0) {
             dropdownMenu.appendChild(sinNotis);
         }else {
-        ms.forEach(m => dropdownMenu.appendChild(renderNoti(m)))
+            ms.forEach(m => dropdownMenu.appendChild(renderNoti(m)))
         }
-    
+        
     });
 }
+
+
+
 
 // y aquí pinta mensajes según van llegando
 if (ws.receive) {
     const oldFn = ws.receive; // guarda referencia a manejador anterior
     ws.receive = (m) => {
+
         oldFn(m); // llama al manejador anterior
-        if(dropdownMenu.contains(sinNotis)) {
-            dropdownMenu.removeChild(sinNotis);
+        
+        if (m.type == "MOSTRAR") {
+
+            if(dropdownMenu.contains(sinNotis)) {
+                dropdownMenu.removeChild(sinNotis);
+            }
+            dropdownMenu.appendChild(renderNoti(m));
+            mostrarNuevaNotificacion(m);
         }
-        dropdownMenu.appendChild(renderNoti(m));
-        mostrarNuevaNotificacion(m);
+        else { // ACTUALIZAR
+            console.log(m.text);
+            //Ejemplo de cómo convertir a JSON
+            let reservaJSON = JSON.parse(m.text);
+            let spotId = reservaJSON.spotId;
+            console.log(spotId);
+
+            let reservasTd = document.getElementById('reserves-' + spotId);
+            let ul = reservasTd.querySelector("ul");
+
+            const reserva = document.createElement('li');
+            reserva.textContent = reservaJSON.startDate + " " + reservaJSON.startTime + " - " + reservaJSON.endDate + " " + reservaJSON.endTime;
+            ul.appendChild(reserva);
+        }
     }
 }
 

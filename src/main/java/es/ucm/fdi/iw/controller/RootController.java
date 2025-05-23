@@ -51,19 +51,6 @@ public class RootController {
 
 	@GetMapping("/")
     public String index(Model model) {
-        /*List<Parking> parkings = entityManager.createNamedQuery("Parking.findAll", Parking.class).getResultList();
-        List<Parking.Transfer> transferParkings = new ArrayList<>();
-        for (Parking p : parkings) {
-            transferParkings.add(p.toTransfer());
-        }
-        model.addAttribute("parkings", transferParkings);
-        model.addAttribute("radius", 3000);
-
-        log.info("Found " + parkings.size() + " parkings");
-        for (Parking p : parkings) {
-            log.info("Parking: " + p.getName());
-        }*/
-
         return "index";
     }
 

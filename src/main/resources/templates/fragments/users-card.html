@@ -2,25 +2,34 @@
 <html class="h-100" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <title>Users Card</title>
+  <title>Users Card</title>
 </head>
-<th:block th:fragment="users-card">    
-<!-- Card 1-->
- <!--https://startbootstrap.com/previews/personal-->
-    <div class="card shadow border-0 rounded-4 mb-5 col col-5 m-4">
-        <div class="card-body p-5">
-            <div class="row align-items-center gx-5">
-                <div class="col text-center text-lg-start mb-4 mb-lg-0 text-center">
-                    <img class="img-thumbnail" id = "profilePic" th:src="@{/user/{id}/pic(id=${u.id})}">
-                </div>
-                <div class="bg-light p-4 rounded-4">
-                    <div class="text-primary fw-bolder mb-2"><span th:text="${user.username}"> Nombre de usuario empresa/usuario</span></div>
-                    <div th:if="${u.hasRole('ENTERPRISE')}" class="small fw-bolder"><span th:text="${user.name}"> Nombre empresa</span></div>
-                    <div class="small fw-bolder"><span th:text="${user.email}"> Correo de la empresa/usuario</span></div>
-                    <div th:if="${u.hasRole('USER')}" class="small fw-bolder"><span th:text="${user.firstName}"> Nombre del usuario</span>
-                      <span th:text="${user.secondName}"> Apellido del usuario</span></div>
+<th:block th:fragment="users-card">
+  <!-- Card 1-->
+  <!--https://startbootstrap.com/previews/personal-->
+  <div class="card shadow border-0 rounded-4 mb-5 col col-5 m-4">
+    <div class="card-body p-5">
+      <div class="row align-items-center gx-5">
+        <div class="col text-center text-lg-start mb-4 mb-lg-0 text-center">
+          <img class="img-thumbnail" id="profilePic" th:src="@{/user/{id}/pic(id=${u.id})}">
+        </div>
+        <div class="bg-light p-4 rounded-4">
+          <div class="text-primary fw-bolder mb-2"><span th:text="${user.username}"> Nombre de usuario
+              empresa/usuario</span></div>
+          <div th:if="${u.hasRole('ENTERPRISE')}" class="small fw-bolder"><span th:text="${user.name}"> Nombre
+              empresa</span></div>
+          <div class="small fw-bolder"><span th:text="${user.email}"> Correo de la empresa/usuario</span></div>
+          <div th:if="${u.hasRole('USER')}" class="small fw-bolder"><span th:text="${user.firstName}"> Nombre del
+              usuario</span>
+            <span th:text="${user.secondName}"> Apellido del usuario</span>
+          </div>
+          <div class="small fw-bolder">
+            <span>Saldo:</span>
+            <span th:text="${user.wallet}">Saldo del usuario</span>
+          </div>
 
 
+<<<<<<< HEAD
                 </div>
             </div>
 
@@ -43,7 +52,64 @@
                 </div>
               </div>
 
+=======
+>>>>>>> origin/add-vehicle
         </div>
+      </div>
+
+      <div id="profile" class="mb-3 mt-4">
+        <form id="avatarform" th:action="@{/user/{id}/pic(id=${user.id})}" method="post" enctype="multipart/form-data">
+          <div class="mb-3">
+            <input type="file" id="f_avatar" name="photo" class="form-control" accept="image/jpeg,image/png">
+          </div>
+          <div class="mb-3">
+            <img class="preview w-100 h-100" id="avatar" />
+          </div>
+          <button id="postAvatar" class="perfilable btn btn-outline-dark w-100" type="submit">Usar como foto de
+            perfil</button>
+        </form>
+      </div>
+
+      <script>//revisa esto
+        document.querySelector("#f_avatar").onchange = e => {
+          let img = document.querySelector("#avatar");
+          let fileInput = document.querySelector("#f_avatar");
+          if (fileInput.files.length > 0) {
+            readImageFileData(fileInput.files[0], img);
+          } else {
+            img.src = "";
+          }
+        };
+
+        document.querySelector("#postAvatar").onclick = e => {
+          e.preventDefault();
+          let url = document.querySelector("#avatarform").action;
+          let img = document.querySelector("#avatar");
+          let fileInput = document.querySelector("#f_avatar");
+          if (fileInput.files.length === 0) {
+            alert("Por favor selecciona una imagen para subir.");
+            return;
+          }
+          postImage(img, url, "photo").then(() => {
+            let cacheBuster = "?" + new Date().getTime();
+
+            let navThumb = document.querySelector("a.nav-link > img.iwthumb");
+            if (navThumb) navThumb.src = url + cacheBuster;
+
+            let perfilImg = document.querySelector("img.img-thumbnail");
+            if (perfilImg) perfilImg.src = url + cacheBuster;
+
+            img.src = "";  // Limpia la previsualización en vez de remover el elemento
+            fileInput.value = "";
+          }).catch(err => {
+            alert("Error al subir la imagen: " + err.message);
+          });
+        };
+      </script>
+
+
     </div>
+  </div>
 </th:block>
+
 </html>

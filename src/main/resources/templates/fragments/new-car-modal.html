@@ -1,74 +1,76 @@
 <div th:fragment="new-car-modal">
+  <!-- Modal trigger button -->
+  <button
+    type="button"
+    class="btn btn-light btn-lg"
+    data-bs-toggle="modal"
+    data-bs-target="#modalId"
+  >
+    Nuevo Vehículo
+  </button>
 
-    <!-- Modal trigger button -->
-    <button type="button" class="btn btn-light btn-lg " data-bs-toggle="modal" data-bs-target="#modalId">
-        Nuevo Vehículo	
-    </button>
-    
-    <!-- Modal Body -->
+  <!-- Modal Body -->
+  <div
+    class="modal fade"
+    id="modalId"
+    tabindex="-1"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    role="dialog"
+    aria-labelledby="modalTitleId"
+    aria-hidden="true"
+  >
     <div
-        class="modal fade"
-        id="modalId"
-        tabindex="-1"
-        data-bs-backdrop="static"
-        data-bs-keyboard="false"
-        
-        role="dialog"
-        aria-labelledby="modalTitleId"
-        aria-hidden="true"
+      class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm"
+      role="document"
     >
-        <div
-            class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm"
-            role="document"
-        >
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitleId">
-                        Nuevo Vehículo
-                    </h5>
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                    ></button>
-                </div>
-                <div class="modal-body text-start p-5">
-                    <div class="row mb-3">
-                        <label for="marca">Marca:</label>
-                        <input type="text" name="brand" id="brand">
-                    </div>
-                    <div class="row mb-3">
-                        <label for="modelo">Modelo:</label>
-                        <input type="text" name="model" id="model">
-                    </div>
-                    <div class="row mb-3">
-                        <label for="matricula">Matricula:</label>
-                        <input type="text" name="plate" id="plate">
-                    </div>
-                    <div class="row mb-3">
-                        <label for="tamanyo">Tamaño:</label>
-                        <select class="form-select form-select-lg" name="size" id="size">
-                        <option value="" selected disabled>Selecciona 1</option>
-                        <option th:value="S">S</option>
-                        <option th:value="M">M</option>
-                        <option th:value="XL">XL</option>
-                </select>
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                    >
-                        Cancelar
-                    </button>
-                    <button type="button" id="newVehicleSubmit" class="btn btn-primary">Guardar</button>
-                </div>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitleId">Nuevo Vehículo</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
+        <div class="modal-body text-start p-5">
+          <div class="row mb-3">
+            <label for="marca">Marca:</label>
+            <input type="text" name="brand" id="brand" />
+          </div>
+          <div class="row mb-3">
+            <label for="modelo">Modelo:</label>
+            <input type="text" name="model" id="model" />
+          </div>
+          <div class="row mb-3">
+            <label for="matricula">Matricula:</label>
+            <input type="text" name="plate" id="plate" />
+          </div>
+          <div class="row mb-3">
+            <label for="tamanyo">Tamaño:</label>
+            <select class="form-select form-select-lg" name="size" id="size">
+              <option value="" selected disabled>Selecciona 1</option>
+              <option th:value="S">S</option>
+              <option th:value="M">M</option>
+              <option th:value="XL">XL</option>
+            </select>
+            <div id="error" class="alert"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancelar
+          </button>
+          <button type="button" id="newVehicleSubmit" class="btn btn-primary">
+            Guardar
+          </button>
+        </div>
+      </div>
     </div>
-    
+  </div>
 </div>

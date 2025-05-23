@@ -1,3 +1,5 @@
+// Ejemplo de uso de Leaflet para mostrar un mapa y buscar parkings
+
 //esperar que este cargado el documento
 document.addEventListener('DOMContentLoaded', function () {
 

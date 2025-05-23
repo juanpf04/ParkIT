@@ -137,13 +137,15 @@ function guardarParking(button) {
   let latitud = document.getElementById("latitud-" + id).innerHTML;
   let longitud = document.getElementById("longitud-" + id).innerHTML;
 
+  // Ejemplo de fetch para guardar el parking
+  // LLama al controlador para guardar el parking
   fetch(`/admin/guardarParking/${id}?latitud=${latitud}&longitud=${longitud}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     credentials: "include",
-  })
+  }) //Recibe la respuesta del controlador
     .then((response) => {
       if (response.ok) {
         let successMessage = document.createElement("div");

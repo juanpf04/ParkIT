@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () { //Para que no lo car
         })
         .then(d => {
             console.log("happy", d)
-            window.location.href = "/enterprise/enterprise-requests";
+            window.location.href = "/enterprise/requests";
         })
         .catch(e => console.log("sad", e))
         

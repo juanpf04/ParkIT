@@ -54,8 +54,8 @@
                     <td id="fila1"><a class="nav-link" th:text="${parkings.feePerHour}">Precio/h</a></td>
 
                     <td id="fila1"><a class="boton-parkings btn btn-primary m-1 shadow-inset-center"
-                            th:href="@{/enterprise/enterprise-plazas (parkingId=${parkings.id})}"
-                            href="/enterprise/enterprise-plazas">Ver plazas</a>
+                            th:href="@{/enterprise/parking/{id}/plazas(id=${parkings.id})}"
+                            >Ver plazas</a>
                         <form th:action="@{/enterprise/delete-parking}" method="post" style="display:inline;">
                             <input type="hidden" name="parkingId" th:value="${parkings.id}" />
                             <button type="submit" class="btn btn-danger m-1">Eliminar</button>

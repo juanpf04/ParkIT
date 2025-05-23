@@ -315,6 +315,45 @@ public class StartupConfig {
         r2.setVehicle(v2);
         entityManager.persist(r2);
 
+        Reserve r3 = new Reserve();
+        // r2.setId(2);
+        r3.setState(Reserve.State.CONFIRMED);
+        r3.setStartDate(LocalDate.parse("2025-03-06"));
+        r3.setEndDate(LocalDate.parse("2025-03-07"));
+        r3.setStartTime(LocalTime.parse("13:00"));
+        r3.setEndTime(LocalTime.parse("14:00"));
+        r3.setPrice(8.0);
+        r3.setComments("Reserva para evento");
+        r3.setSpot(entityManager.find(Spot.class, 1075));
+        r3.setVehicle(v2);
+        entityManager.persist(r3);
+
+        Reserve r4 = new Reserve();
+        // r2.setId(2);
+        r4.setState(Reserve.State.CONFIRMED);
+        r4.setStartDate(LocalDate.parse("2025-03-06"));
+        r4.setEndDate(LocalDate.parse("2025-03-07"));
+        r4.setStartTime(LocalTime.parse("15:00"));
+        r4.setEndTime(LocalTime.parse("17:00"));
+        r4.setPrice(8.0);
+        r4.setComments("Reserva para evento");
+        r4.setSpot(entityManager.find(Spot.class, 1075));
+        r4.setVehicle(v2);
+        entityManager.persist(r4);
+
+        Reserve r5 = new Reserve();
+        // r2.setId(2);
+        r5.setState(Reserve.State.CONFIRMED);
+        r5.setStartDate(LocalDate.parse("2025-03-06"));
+        r5.setEndDate(LocalDate.parse("2025-03-07"));
+        r5.setStartTime(LocalTime.parse("18:00"));
+        r5.setEndTime(LocalTime.parse("19:00"));
+        r5.setPrice(8.0);
+        r5.setComments("Reserva para evento");
+        r5.setSpot(entityManager.find(Spot.class, 1075));
+        r5.setVehicle(v2);
+        entityManager.persist(r5);
+
         Request req1 = new Request();
         req1.setEnabled(true);
         req1.setName("Interparking el mercado");

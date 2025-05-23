@@ -20,58 +20,65 @@
             </div>
 
             <div th:if="${not #lists.isEmpty(requests)}" class="accordion" id="parkingAccordion">
-                <h2 class="accordion-header" th:id="'heading-' + ${request.id}">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        th:data-bs-target="'#collapse-' + ${request.id}" aria-expanded="false"
-                        th:aria-controls="'collapse-' + ${request.id}">
-                        <p>
-                            <span th:text="${request.enterprise.name}">Nombre de la empresa</span><br />
-                            <span th:text="${request.name}">Nombre</span>
-                        </p>
-                    </button>
-                </h2>
-                <div th:id="'collapse-' + ${request.id}" class="accordion-collapse collapse"
-                    th:aria-labelledby="'heading-' + ${request.id}" data-bs-parent="#parkingAccordion">
-                    <div class="accordion-body">
-                        <div class="row">
-                            <!-- Columna del mapa -->
-                            <div class="col-lg-6 mapa-reserva map-container order-lg-1 order-1"
-                                th:data-address="${request.address} + ', ' + ${request.city} + ', ' + ${request.country}"
-                                th:id="'mapa-' + ${request.id}">
-                            </div>
+                <div th:each="request : ${requests}" class="accordion-item">
+                    <h2 class="accordion-header" th:id="'heading-' + ${request.id}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            th:data-bs-target="'#collapse-' + ${request.id}" aria-expanded="false"
+                            th:aria-controls="'collapse-' + ${request.id}">
+                            <p>
+                                <span th:text="${request.enterprise.name}">Nombre de la empresa</span><br />
+                                <span th:text="${request.name}">Nombre</span>
+                            </p>
+                        </button>
+                    </h2>
+                    <div th:id="'collapse-' + ${request.id}" class="accordion-collapse collapse"
+                        th:aria-labelledby="'heading-' + ${request.id}" data-bs-parent="#parkingAccordion">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <!-- Columna del mapa -->
+                                <div class="col-lg-6 mapa-reserva map-container order-lg-1 order-1"
+                                    th:data-address="${request.address} + ', ' + ${request.city} + ', ' + ${request.country}"
+                                    th:id="'mapa-' + ${request.id}">
+                                </div>
 
-                            <!-- Columna de la información -->
-                            <div class="col-lg-6 order-lg-2 order-2">
-                                <div class="card p-3">
-                                    <div class="card-text">
-                                        <p><strong>Nombre:</strong> <span th:text="${request.name}">Nombre</span></p>
-                                        <p><strong>Dirección:</strong> <span
-                                                th:text="${request.address}">Dirección</span></p>
-                                        <p><strong>Código Postal:</strong> <span th:text="${request.cp}">Código
-                                                Postal</span></p>
-                                        <p><strong>Ciudad:</strong> <span th:text="${request.city}">Ciudad</span></p>
-                                        <p><strong>País:</strong> <span th:text="${request.country}">País</span></p>
-                                        <p><strong>Teléfono:</strong> <span
-                                                th:text="${request.telephone}">Teléfono</span></p>
-                                        <p><strong>Fecha de apertura:</strong> <span
-                                                th:text="${request.openingTime}">Fecha de apertura</span></p>
-                                        <p><strong>Fecha de cierre:</strong> <span
-                                                th:text="${request.closingTime}">Fecha de cierre</span></p>
-                                        <p><strong>Plazas:</strong> <span th:text="${request.totalSpots}">Plazas</span>
-                                        </p>
-                                        <p><strong>Precio/h:</strong> <span
-                                                th:text="${request.feePerHour}">Precio/h</span></p>
-                                        <p><strong>Latitud:</strong> <span th:id="'latitud-' + ${request.id}"></span>
-                                        </p>
-                                        <p><strong>Longitud:</strong> <span th:id="'longitud-' + ${request.id}"></span>
-                                        </p>
-                                        <div class="error" th:id="'error-' + ${request.id}">
-                                        </div>
-                                        <div>
-                                            <a class="btn btn-primary m-1" onclick="guardarParking(this)"
-                                                th:data-id="${request.id}">Aceptar</a>
-                                            <a class="btn btn-danger m-1" onclick="eliminarRequest(this)"
-                                                th:data-id="${request.id}">Rechazar</a>
+                                <!-- Columna de la información -->
+                                <div class="col-lg-6 order-lg-2 order-2">
+                                    <div class="card p-3">
+                                        <div class="card-text">
+                                            <p><strong>Nombre:</strong> <span th:text="${request.name}">Nombre</span>
+                                            </p>
+                                            <p><strong>Dirección:</strong> <span
+                                                    th:text="${request.address}">Dirección</span></p>
+                                            <p><strong>Código Postal:</strong> <span th:text="${request.cp}">Código
+                                                    Postal</span></p>
+                                            <p><strong>Ciudad:</strong> <span th:text="${request.city}">Ciudad</span>
+                                            </p>
+                                            <p><strong>País:</strong> <span th:text="${request.country}">País</span></p>
+                                            <p><strong>Teléfono:</strong> <span
+                                                    th:text="${request.telephone}">Teléfono</span></p>
+                                            <p><strong>Fecha de apertura:</strong> <span
+                                                    th:text="${request.openingTime}">Fecha de apertura</span></p>
+                                            <p><strong>Fecha de cierre:</strong> <span
+                                                    th:text="${request.closingTime}">Fecha de cierre</span></p>
+                                            <p><strong>Plazas:</strong> <span
+                                                    th:text="${request.totalSpots}">Plazas</span>
+                                            </p>
+                                            <p><strong>Precio/h:</strong> <span
+                                                    th:text="${request.feePerHour}">Precio/h</span></p>
+                                            <p><strong>Latitud:</strong> <span
+                                                    th:id="'latitud-' + ${request.id}"></span>
+                                            </p>
+                                            <p><strong>Longitud:</strong> <span
+                                                    th:id="'longitud-' + ${request.id}"></span>
+                                            </p>
+                                            <div class="error" th:id="'error-' + ${request.id}">
+                                            </div>
+                                            <div>
+                                                <a class="btn btn-primary m-1" onclick="guardarParking(this)"
+                                                    th:data-id="${request.id}">Aceptar</a>
+                                                <a class="btn btn-danger m-1" onclick="eliminarRequest(this)"
+                                                    th:data-id="${request.id}">Rechazar</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -35,4 +35,4 @@ Feature: Hacer una request al admin
     # Paso 4: Redireccion a la pagina de solicitudes.
     And delay(2000)  
     When click("{a}Solicitudes")
-    Then waitForUrl(baseUrl + '/enterprise/enterprise-requests')  
+    Then waitForUrl(baseUrl + '/enterprise/requests')  

@@ -3,12 +3,14 @@ package es.ucm.fdi.iw.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import es.ucm.fdi.iw.LocalData;
+import es.ucm.fdi.iw.controller.UserController.NoEsTuPerfilException;
 import es.ucm.fdi.iw.model.User;
+import es.ucm.fdi.iw.model.Message.Type;
 import es.ucm.fdi.iw.model.Enterprise;
 import es.ucm.fdi.iw.model.Message;
 import es.ucm.fdi.iw.model.Parker;
@@ -83,7 +87,6 @@ public class EnterpriseController {
     /**
      * Landing page for a user profile
      */
-
     @GetMapping("{id}")
     public String index(@PathVariable long id, Model model, HttpSession session) {
         User target = (Enterprise) entityManager.find(Enterprise.class, id);
@@ -92,7 +95,13 @@ public class EnterpriseController {
         return "enterprise-info";
     }
 
-    @GetMapping("/enterprise-parkings")
+    /**
+	 * Muestra los parkings de la empresa.
+     * 
+	 * @param model    Modelo para la vista.
+	 * @return Carga la vista de los parkings de la empresa.
+	 */
+    @GetMapping("/parkings")
     public String enterpriseParkings(Model model) {
         User user = (User) model.getAttribute("u");
 
@@ -106,7 +115,13 @@ public class EnterpriseController {
         return "enterprise-parkings";
     }
 
-    @GetMapping("/enterprise-requests")
+    /**
+     * Solicitudes de parking de la empresa.
+     * 
+     * @param model Modelo para la vista.
+     * @return Carga la vista de las solicitudes de parking de la empresa.
+     */
+    @GetMapping("/requests")
     public String enterpriseRequests(Model model) {
         User user = (User) model.getAttribute("u");
 
@@ -127,8 +142,15 @@ public class EnterpriseController {
         return "add-parking";
     }
 
-    @GetMapping("/enterprise-plazas")
-    public String enterprisePlazas(@RequestParam Long parkingId, Model model) {
+    /**
+     * Muestra las plazas de un parking.
+     * 
+     * @param parkingId ID del parking.
+     * @param model     Modelo para la vista.
+     * @return Carga la vista de las plazas del parking.
+     */
+    @GetMapping("/parking/{parkingId}/plazas")
+    public String enterprisePlazas(@PathVariable Long parkingId, Model model) {
         Parking parking = entityManager.find(Parking.class, parkingId);
         if (parking == null) {
             return "redirect:/error";
@@ -138,6 +160,12 @@ public class EnterpriseController {
                 .createNamedQuery("Spot.findByParking", Spot.class)
                 .setParameter("parking", parking)
                 .getResultList();
+
+        List<Spot.Transfer> spotTransfers = new ArrayList<>();
+        for (Spot spot : spots) {
+            spotTransfers.add(spot.toTransfer());
+        }
+        model.addAttribute("spotTransfers", spotTransfers);
         model.addAttribute("spots", spots);
         return "enterprise-plazas";
     }
@@ -230,6 +258,8 @@ public class EnterpriseController {
             message.setRecipient(null); // null para enviar a todos los administradores
             message.setDateSent(LocalDateTime.now());
             message.setText(notificationText);
+            message.setType(Type.MOSTRAR);
+            
             entityManager.persist(message);
 
             // Convertir el mensaje a JSON y enviarlo
@@ -249,6 +279,13 @@ public class EnterpriseController {
         // return enterpriseRequests(model);
     }
 
+    /**
+     * Solicita eliminar un parking al administrador.
+     * 
+     * @param parkingId ID del parking a eliminar.
+     * @param model     Modelo para la vista.
+     * @return Redirige a la vista de solicitudes de la empresa.
+     */
     @PostMapping("/delete-parking")
     @Transactional
     public String deleteParking(@RequestParam Long parkingId, Model model, HttpSession session) {
@@ -290,7 +327,7 @@ public class EnterpriseController {
             model.addAttribute("error", "Hubo un error al procesar la solicitud: " + e.getMessage());
         }
 
-        return "redirect:/enterprise/enterprise-requests";
+        return "redirect:/enterprise/requests";
     }
 
     /**
