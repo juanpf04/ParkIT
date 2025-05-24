@@ -13,15 +13,14 @@
         <h1>Mis solicitudes</h1>
     </div>
 
-
     <div class="container-fluid row p-1">
         <div th:if="${success}">
-            <div class="alert alert-success">
+            <div id="success-message" class="alert alert-success">
                 <p th:text="${success}"></p>
             </div>
         </div>
         <div th:if="${error}">
-            <div class="alert alert-danger">
+            <div id="error-message" class="alert alert-danger">
                 <p th:text="${error}"></p>
             </div>
         </div>
@@ -86,6 +85,25 @@
         </div>
     </div>
     <script th:src="@{/js/mapa-request.js}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded",function(){
+            //Ocultar mensaje de éxito o de error  después de 5 segundos
+            const successMessage = document.getElementById("success-message");
+            if(successMessage){
+                setTimeout(()=>{
+                    successMessage.style.display = "none";
+                },5000);
+            }
+
+              // Ocultar mensaje de error después de 5 segundos
+            const errorMessage = document.getElementById("error-message");
+            if (errorMessage) {
+                setTimeout(() => {
+                    errorMessage.style.display = "none";
+                }, 5000);
+            }
+        });
+    </script>
     <footer th:replace="~{fragments/footer.html :: footer}"></footer>
 </body>
 

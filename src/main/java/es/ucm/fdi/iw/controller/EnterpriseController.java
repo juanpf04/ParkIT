@@ -122,13 +122,21 @@ public class EnterpriseController {
      * @return Carga la vista de las solicitudes de parking de la empresa.
      */
     @GetMapping("/requests")
-    public String enterpriseRequests(Model model) {
+    public String enterpriseRequests(Model model, @RequestParam(required = false) String success, @RequestParam(required = false) String error) {
         User user = (User) model.getAttribute("u");
 
         List<Request> requests = entityManager
                 .createNamedQuery("Request.findByEnterprise", Request.class)
                 .setParameter("enterprise", user)
                 .getResultList();
+
+        //El mensaje de éxito lo recibe desde el js que hemos creado a través de la URL.
+        if (success!=null){
+            model.addAttribute("success", success);
+        }
+        if (error!= null) {
+            model.addAttribute("error", error);
+        }
 
         // El nombre que le pongamos el de entre comillas es el que usamos luego para
         // recorrer en la vista con thimeleaf
@@ -268,7 +276,7 @@ public class EnterpriseController {
             messagingTemplate.convertAndSend("/topic/admin", json);
 
             model.addAttribute("success", "Solicitud realizada con éxito. Esperando respuesta del administrador.");
-            return "{\"result\": \"Solicitud realizada con éxito . Esperando respuesta del administrador.\"}";
+            return "{\"result\": \"Solicitud realizada con éxito. Esperando respuesta del administrador.\"}";
         } catch (Exception e) {
             model.addAttribute("error", "Hubo un error al guardar la solicitud: " +
                     e.getMessage());

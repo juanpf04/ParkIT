@@ -89,6 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+
 function eliminarRequest(button) {
   let id = button.getAttribute("data-id");
 
