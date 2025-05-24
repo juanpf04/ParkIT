@@ -28,7 +28,7 @@
             </div>
             <br>
             <div class="row">
-                <label for="vehiculo">Vehículo</label>
+                <label for="vehiculo" class="form-label">Vehículo</label>
                 <select class="form-select form-select-lg" name="vehicleId" id="vehicleId" required>
                     <option th:if="${vehicleId == null}" value="" selected disabled>Selecciona 1</option>
                     <option th:each="vehicle : ${vehicles}" th:value="${vehicle.id}" th:if="${vehicleId != null} and vehicleId == ${vehicle.id}"
@@ -36,7 +36,7 @@
                     <option th:each="vehicle : ${vehicles}" th:value="${vehicle.id}"
                         th:text="${vehicle.brand}+' '+${vehicle.model}+' ('+${vehicle.plate}+')'"></option>
                 </select>
-                <div class="container text-center">
+                <div class="container text-center mt-3 mb-1">
                     <div th:replace="~{fragments/new-car-modal.html :: new-car-modal}" ></div>
                 </div>
 

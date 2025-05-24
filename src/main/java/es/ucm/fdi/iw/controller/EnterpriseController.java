@@ -315,9 +315,27 @@ public class EnterpriseController {
                 request.setIdParking(parkingId);
 
                 entityManager.persist(request);
-
                 entityManager.flush();
                 entityManager.clear();
+
+            Enterprise enterprise = (Enterprise) session.getAttribute("u");
+            String notificationText = "Solicitud de la empresa " + enterprise.getName() +
+                    " con id: " + request.getId() + " en la dirección: " + request.getAddress() + " para eliminar el dicho parking.";
+            // ID del administrador al que se le envía el mensaje (puede ser null para
+            // enviar a todos los administradores)
+            Message message = new Message();
+            message.setSender(enterprise);
+            message.setRecipient(null); // null para enviar a todos los administradores
+            message.setDateSent(LocalDateTime.now());
+            message.setText(notificationText);
+            message.setType(Type.MOSTRAR);
+            
+            entityManager.persist(message);
+
+            // Convertir el mensaje a JSON y enviarlo
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(message.toTransfer());
+            messagingTemplate.convertAndSend("/topic/admin", json);
 
                 model.addAttribute("success", "Solicitud de eliminación de parking realizada con éxito.");
             } else {

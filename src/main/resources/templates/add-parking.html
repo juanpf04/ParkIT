@@ -10,11 +10,12 @@
   <header th:replace="~{fragments/nav.html :: nav}"></header>
 
   <div class="container mt-3">
-    <h1>Añadir parking</h1>
+    <h1 class="text-center">Añadir parking</h1>
     <!-- th:ACTION es para llamar desde este form cuando hacemos submit al metodo (tipo POST) con esa ruta. -->
-    <form th:action="@{/enterprise/request-parking}" method="POST">
-      <div class="row mt-3">
-        <div class="col-5">
+    <form th:action="@{/enterprise/request-parking}" method="POST" class="justify-content-center">
+      <!-- Primer sector del form -->
+      <div class="row mt-3 ms-5">
+        <div class="col-3">
           <label for="nombre" class="form-label">Nombre:</label>
           <div class="input-group">
             <input type="text" class="form-control" name="name" id="name" aria-describedby="nombreId"
@@ -22,7 +23,7 @@
           </div>
         </div>
 
-        <div class="col-6">
+        <div class="col-7">
           <label for="calle" class="form-label">Calle:</label>
           <div class="input-group">
             <input type="text" class="form-control" name="address" id="address" aria-describedby="calleId"
@@ -31,8 +32,8 @@
         </div>
       </div>
 
-      <div class="row mt-3">
-
+      <!-- Segunda fila del formulario -->
+      <div class="row mt-3 ms-5">
         <div class="col-4">
           <label for="ciudad" class="form-label">Ciudad:</label>
           <div class="input-group">
@@ -40,7 +41,6 @@
               placeholder="Ciudad..." />
           </div>
         </div>
-
         <div class="col-4">
           <label for="ciudad" class="form-label">Pais:</label>
           <div class="input-group">
@@ -48,14 +48,16 @@
               placeholder="Ciudad..." />
           </div>
         </div>
-
         <div class="col-2">
           <label for="cp" class="form-label">CP:</label>
           <div class="input-group">
             <input type="text" class="form-control" name="cp" id="cp" aria-describedby="cpId" placeholder="" />
           </div>
         </div>
+      </div>
 
+      <!-- Siguiente fila por eso ponemos row. -->
+      <div class="row mt-3 ms-5">
         <div class="col-3">
           <label for="hora-apertura" class="form-label">Hora de apertura:</label>
           <div class="input-group">
@@ -63,7 +65,6 @@
               aria-describedby="hora-aperturaId" placeholder="" />
           </div>
         </div>
-
         <div class="col-3">
           <label for="hora-cierre" class="form-label">Hora de cierre:</label>
           <div class="input-group">
@@ -71,10 +72,6 @@
               placeholder="" />
           </div>
         </div>
-
-      </div>
-
-      <div class="row mt-3">
         <div class="col-2">
           <label for="numero-plazas" class="form-label">Número de plazas:</label>
           <div class="input-group">
@@ -90,15 +87,16 @@
               aria-describedby="tarifaId" placeholder="Tarifa por hora del parking..." />
           </div>
         </div>
+      </div>
 
-        <div class="col-3">
+      <div class="row mt-3 ms-5">
+        <div class="col-5">
           <label for="telefono" class="form-label">Teléfono:</label>
           <div class="input-group">
             <input type="number" class="form-control" name="telephone" id="telephone" aria-describedby="telefonoId"
               placeholder="Teléfono de contacto..." />
           </div>
         </div>
-
         <div class="col-5">
           <label for="mail" class="form-label">E-mail:</label>
           <div class="input-group">
@@ -106,7 +104,6 @@
               placeholder="Correo de contacto..." />
           </div>
         </div>
-
       </div>
 
       <div class="row mt-5 mb-5">
