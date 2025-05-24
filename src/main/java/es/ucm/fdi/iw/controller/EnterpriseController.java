@@ -393,7 +393,7 @@ public class EnterpriseController {
                 }
                 
                 //Porcentaje de plazas ocupadas
-                double occupancyPercentage = reservedSpots > 0 ? (reservedSpots * 100.0 / reservedSpots) : 0.0;
+                double occupancyPercentage = (reservedSpots > 0 && spots.size() > 0) ? Math.round(((reservedSpots * 100.0) / spots.size()) * 100.0) / 100.0 : 0.0; // Redondea a 2 decimales
 
                 int freeSpots = spots.size() - reservedSpots;
                 

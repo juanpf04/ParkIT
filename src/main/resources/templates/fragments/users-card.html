@@ -27,33 +27,6 @@
             <span>Saldo:</span>
             <span th:text="${user.wallet}">Saldo del usuario</span>
           </div>
-
-
-<<<<<<< HEAD
-                </div>
-            </div>
-
-            <div id="profile" class="mb-3 mt-4">
-                <div class="mb-3">
-                  <input type="file" id="f_avatar" class="form-control" accept="image/jpeg,image/png">
-                </div>
-                <div class="mb-3">
-                  <img class="preview w-100 h-100" id="avatar" />
-                </div>
-                <div th:if="${u.hasRole('ENTERPRISE')}" >
-                  <form id="avatarform" th:action="@{/enterprise/__${user.id}__/pic}" method ="post" enctype="multipart/form-data">
-                  <button id="postAvatar" class="perfilable btn btn-outline-dark w-100">Usar como foto de perfil</button>
-                  </form>
-                </div>
-                <div th:if="${u.hasRole('USER')}" >
-                  <form id="avatarform" th:action="@{/user/__${user.id}__/pic}" method ="post" enctype="multipart/form-data">
-                  <button id="postAvatar" class="perfilable btn btn-outline-dark w-100">Usar como foto de perfil</button>
-                  </form>
-                </div>
-              </div>
-
-=======
->>>>>>> origin/add-vehicle
         </div>
       </div>
 
