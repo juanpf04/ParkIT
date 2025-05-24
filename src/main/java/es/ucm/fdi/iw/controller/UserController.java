@@ -343,6 +343,12 @@ public class UserController {
 					return "{\"error\": \"Ya existe un vehículo con esa matrícula\"}";
 				}
 				
+				if (brand.isEmpty() || modelo.isEmpty() || plate.isEmpty() ||size.isEmpty())
+				{
+					model.addAttribute("error", "Falta algún dato por rellenar aun");
+					return "{\"error\": \"Te falta rellenar información. Por favor, rellena toda la información completa.\"}";
+				}
+
 				Vehicle v = new Vehicle();
 				
 				v.setBrand(brand);
