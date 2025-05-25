@@ -16,6 +16,12 @@
                 <p th:if="${loginError != false}" class="error">
                     Error en nombre de usuario o contraseña
                 </p>
+
+                <div th:if="${success}" class="alert alert-success alert-dismissible" role="alert">
+                    <div th:text="${success}"></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
                 <p>
                     <label for="username" class="visually-hidden">Username</label>
                     <input type="text" id="username" name="username" class="form-control" placeholder="Username" required="required">

@@ -1,0 +1,131 @@
+<div th:fragment="register-form">
+    <form th:action="@{/postRegister}" method="post" class="contenido-formulario active needs-validation" novalidate>
+        <h4 class="text-center mb-3 mt-3" id="titulo">Registro Parker</h4>
+
+        <label for="tamanyo">Tipo de usuario:</label>
+        <select class="form-select form-select-lg" name="role" id="role">
+            <option th:value="USER">Parker</option>
+            <option th:value="ENTERPRISE">Empresa</option>
+        </select>
+
+        <div class="mb-3">
+            <label for="username" class="form-label">Nombre de Usuario</label>
+            <input type="text" class="form-control" id="username" name="username" minlength="4" required>
+            <div class="invalid-feedback">
+                El nombre de usuario debe tener el formato 12345678A.
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 mb-3">
+                <label for="parkerPassword" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" name="password" minlength="8" required>
+                <div class="invalid-feedback">
+                    La contraseña debe tener al menos 8 caracteres.
+                </div>
+            </div>
+
+            <div class="col-6 mb-3">
+                <label for="parkerPasswordConfirm" class="form-label">Confirmar Contraseña</label>
+                <input type="password" class="form-control" id="repeatPassword" name="repeatPassword" minlength="8"
+                    required>
+                <div class="invalid-feedback">
+                    Las contraseñas no coinciden.
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="mb-3">
+            <label for="telephone" class="form-label">Teléfono</label>
+            <input type="tel" class="form-control" id="telephone" name="telephone" pattern="[0-9]{9}" required>
+            <div class="invalid-feedback">
+                El teléfono debe tener 9 dígitos.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Correo Electrónico</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+            <div class="invalid-feedback">
+                El correo electrónico es obligatorio.
+            </div>
+        </div>
+
+        <div id="parkerAttributes">
+
+            <div class="row">
+                <div class="col-5 mb-3">
+                    <label for="firstName" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" minlength="4" required>
+                    <div class="invalid-feedback">
+                        El nombre debe tener al menos 4 caracteres.
+                    </div>
+                </div>
+
+                <div class="col-7 mb-3">
+                    <label for="secondName" class="form-label">Apellido</label>
+                    <input type="text" class="form-control" id="secondName" name="secondName" minlength="4" required>
+                    <div class="invalid-feedback">
+                        El apellido debe tener al menos 4 caracteres.
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="DNI" class="form-label">DNI</label>
+                <input type="text" class="form-control" id="DNI" name="DNI" pattern="[0-9]{8}[A-Za-z]{1}" required>
+                <div class="invalid-feedback">
+                    El DNI debe tener el formato 12345678A.
+                </div>
+            </div>
+        </div>
+
+        <div id="enterpriseAttributes">
+            <div class="mb-3">
+                <label for="enterpriseName" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="enterpriseName" name="name" minlength="4" required>
+                <div class="invalid-feedback">
+                    El nombre debe tener al menos 4 caracteres.
+                </div>
+            </div>
+
+            <div class="mb-3 mt-3">
+                <label for="enterpriseCIF" class="form-label">CIF</label>
+                <input type="text" class="form-control" id="enterpriseCIF" name="CIF" pattern="[A-Za-z]{1}[0-9]{8}"
+                    required>
+                <div class="invalid-feedback">
+                    El CIF debe tener el formato 12345678A.
+                </div>
+            </div>
+
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mt-3 mb-3">Registrarse</button>
+    </form>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            console.log("script");
+
+            document.getElementById("role").addEventListener("change", function () {
+                var role = document.getElementById("role").value;
+                console.log(role);
+                if (role == "USER") {
+                    document.getElementById("parkerAttributes").style.display = "block";
+                    document.getElementById("enterpriseAttributes").style.display = "none";
+                    document.getElementById("titulo").innerHTML = "Registro Parker";
+                } else if (role == "ENTERPRISE") {
+                    document.getElementById("parkerAttributes").style.display = "none";
+                    document.getElementById("enterpriseAttributes").style.display = "block";
+                    document.getElementById("titulo").innerHTML = "Registro Empresa";
+                }
+                console.log("sale");
+            });
+
+        });
+    </script>
+</div>
