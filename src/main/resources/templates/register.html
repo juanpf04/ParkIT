@@ -9,26 +9,19 @@
 <body class="d-flex flex-column h-100">
     <header th:replace="~{fragments/nav.html :: nav}"></header>
 
-    <main class="flex-shrink-0">
-        <div class="container">
-            <form class="form-signin" method="post" th:action="@{/login}">
-                <h2 class="form-signin-heading">Please sign in</h2>
-                <p th:if="${loginError != false}" class="error">
-                    Error en nombre de usuario o contraseña
-                </p>
-                <p>
-                    <label for="username" class="visually-hidden">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Username" required="required">
-                </p>
-                <p>
-                    <label for="password" class="visually-hidden">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required="required">
-                </p>
-                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-            </form>
-        </div>
-    </main>
-
+    <div class="form-register">
+        <!-- deslizador para cambiar el formulario de registro -->
+         <div class="toggle-label">
+             <div class="form-check form-switch">
+                <input type="check-box" class="form-check-input">
+                <label for="userTypeSwitch" class="form-check-label">
+                    <span class="switchUserLabel"><strong>Registro Usuario</strong></span>
+                </label>
+            </div>
+         </div>
+         <th:block th:replace="~{fragments/register-forms.html :: register-parker-form}"></th:block>
+         <th:block th:replace="~{fragments/register-forms.html :: register-enterprise-form}"></th:block>
+    </div>
     <th:block th:replace="~{fragments/footer.html :: footer}" />
 </body>
 

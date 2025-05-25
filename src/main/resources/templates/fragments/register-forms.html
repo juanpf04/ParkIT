@@ -1,0 +1,115 @@
+<div th:fragment="register-parker-form">
+    <form action="registerParker" class="contenido-formulario active needs-validation" novalidate>
+        <h4 class="text-center mb-3">Registro Parker</h4>
+        <div class="mb-3">
+            <label for="parkerUserName" class="form-label">Nombre de Usuario</label>
+            <input type="text" class="form-control" id="parkerUserName" name="parkerUserName" minlength="4" required>
+            <div class="invalid-feedback">
+                El nombre de usuario debe tener el formato 12345678A.
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="parkerName" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="parkerName" name="parkerName" minlength="4" required>
+            <div class="invalid-feedback">
+                El nombre debe tener al menos 4 caracteres.
+        </div>
+        <div class="mb-3">
+            <label for="parkerSecondName" class="form-label">Apellido</label>
+            <input type="text" class="form-control" id="parkerSecondName" name="parkerSecondName" minlength="4" required>
+            <div class="invalid-feedback">
+                El apellido debe tener al menos 4 caracteres.
+        </div>
+        <div class="mb-3">
+            <label for="parkerDNI" class="form-label">DNI</label>
+            <input type="text" class="form-control" id="parkerDNI" name="parkerDNI" pattern="[0-9]{8}[A-Za-z]{1}" required>
+            <div class="invalid-feedback">
+                El DNI debe tener el formato 12345678A.
+            </div>
+        </div>
+                <div class="mb-3">
+            <label for="parkerPhone" class="form-label">Teléfono</label>
+            <input type="tel" class="form-control" id="parkerPhone" name="parkerPhone" pattern="[0-9]{9}" required>
+            <div class="invalid-feedback">
+                El teléfono debe tener 9 dígitos.
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="parkerEmail" class="form-label">Correo Electrónico</label>
+            <input type="email" class="form-control" id="parkerEmail" name="parkerEmail" required>
+            <div class="invalid-feedback">
+                El correo electrónico es obligatorio.
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="parkerPassword" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="parkerPassword" name="parkerPassword" minlength="8" required>
+            <div class="invalid-feedback">
+                La contraseña debe tener al menos 8 caracteres.
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="parkerPasswordConfirm" class="form-label">Confirmar Contraseña</label>
+            <input type="password" class="form-control" id="parkerPasswordConfirm" name="parkerPasswordConfirm" minlength="8" required>
+            <div class="invalid-feedback">
+                Las contraseñas no coinciden.
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 mt-3">Registrarse</button>
+    </form>
+</div>
+
+<div th:fragment="register-enterprise-form">
+    <form action="registerEnterprise" class="contenido-formulario active needs-validation" novalidate>
+        <h4 class="text-center mb-3">Registro Empresa</h4>
+        <div class="mb-3">
+            <label for="enterpriseUserName" class="form-label">Nombre de Usuario</label>
+            <input type="text" class="form-control" id="enterpriseUserName" name="enterpriseUserName" minlength="4" required>
+            <div class="invalid-feedback">
+                El nombre de usuario debe tener el formato 12345678A.
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="enterpriseName" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="enterpriseName" name="enterpriseName" minlength="4" required>
+            <div class="invalid-feedback">
+                El nombre debe tener al menos 4 caracteres.
+        </div>
+        <div class="mb-3">
+            <label for="enterpriseCIF" class="form-label">CIF</label>
+            <input type="text" class="form-control" id="enterpriseCIF" name="enterpriseCIF" pattern="[A-Za-z]{1}[0-9]{8}" required>
+            <div class="invalid-feedback">
+                El CIF debe tener el formato 12345678A.
+            </div>
+        </div>
+                <div class="mb-3">
+            <label for="enterprisePhone" class="form-label">Teléfono</label>
+            <input type="tel" class="form-control" id="enterprisePhone" name="enterprisePhone" pattern="[0-9]{9}" required>
+            <div class="invalid-feedback">
+                El teléfono debe tener 9 dígitos.
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="enterpriseEmail" class="form-label">Correo Electrónico</label>
+            <input type="email" class="form-control" id="enterpriseEmail" name="enterpriseEmail" required>
+            <div class="invalid-feedback">
+                El correo electrónico es obligatorio.
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="enterprisePassword" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="enterprisePassword" name="enterprisePassword" minlength="8" required>
+            <div class="invalid-feedback">
+                La contraseña debe tener al menos 8 caracteres.
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="enterprisePasswordConfirm" class="form-label">Confirmar Contraseña</label>
+            <input type="password" class="form-control" id="enterprisePasswordConfirm" name="enterprisePasswordConfirm" minlength="8" required>
+            <div class="invalid-feedback">
+                Las contraseñas no coinciden.
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 mt-3">Registrarse</button>
+    </form>
+</div>
