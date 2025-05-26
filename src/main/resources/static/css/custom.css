@@ -1,5 +1,9 @@
 /* usa este fichero para personalizar tus vistas */
 
+#form-enterprise {
+  display: none;
+}
+
 .iwthumb {
   height: 32px;
   width: 32px;
