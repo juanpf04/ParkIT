@@ -63,7 +63,7 @@ public class RootController {
         return "register";
     }
 
-    @PostMapping("/postRegister")
+    @PostMapping("/register")
     @Transactional
     public String postRegister(Model model, 
             @RequestParam @Nullable String username,
