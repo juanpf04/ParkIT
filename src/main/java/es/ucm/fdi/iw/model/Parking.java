@@ -114,8 +114,8 @@ public class Parking implements Transferable<Parking.Transfer> {
             this.telephone = p.getTelephone();
             this.email = p.getEmail();
             this.feePerHour = p.getFeePerHour();
-            this.openingTime = p.getOpeningTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-            this.closingTime = p.getClosingTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+            this.openingTime = "";//p.getOpeningTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+            this.closingTime = "";//p.getClosingTime().format(DateTimeFormatter.ofPattern("HH:mm"));
             this.longitude = p.getLongitude();
             this.latitude = p.getLatitude();
             this.enterpriseId = p.getEnterprise().getId();
@@ -128,7 +128,12 @@ public class Parking implements Transferable<Parking.Transfer> {
 
     @Override
     public Transfer toTransfer() {
-        return new Transfer(this);
+        return new Transfer(this.getId(), this.isEnabled(), this.getName(), this.getAddress(),
+                this.getCp(), this.getCity(), this.getCountry(), this.getTelephone(), this.getEmail(),
+                this.getFeePerHour(),
+                (this.getOpeningTime() != null ? this.getOpeningTime().format(DateTimeFormatter.ofPattern("HH:mm")) : ""),
+                (this.getClosingTime() != null ? this.getClosingTime().format(DateTimeFormatter.ofPattern("HH:mm")) : ""),
+                this.getLongitude(), this.getLatitude(), this.getEnterprise().getId(), this.getSpots().size());
     }
 
     @Override

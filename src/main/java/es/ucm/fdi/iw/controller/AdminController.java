@@ -155,12 +155,33 @@ public class AdminController {
             request.setState("Aceptada");
             entityManager.persist(request);
             Admin admin = (Admin) session.getAttribute("u");
-            notificarEstadoParking(admin, p, request);
+            //notificarEstadoParking(admin, p, request);
+            notificarParkingNuevo(admin, p);
 
             return ResponseEntity.ok("Parking añadido correctamente");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al añadir el parking: " + e.getMessage());
+        }
+    }
+
+    private void notificarParkingNuevo(Admin admin, Parking parking) {
+        try {
+            Message m = new Message();
+            Enterprise enterprise = parking.getEnterprise();
+            m.setRecipient(enterprise);
+            m.setSender(admin);
+            m.setDateSent(LocalDateTime.now());
+            m.setType(Type.ACTUALIZAR_TABLA_PARKING);
+            ObjectMapper mapper = new ObjectMapper();
+            m.setText(mapper.writeValueAsString(parking.getName()));
+            log.info("Notificando nuevo parking: {}", mapper.writeValueAsString(parking.toTransfer()));
+            entityManager.persist(m);
+            entityManager.flush(); // to get Id before commit
+            String json = mapper.writeValueAsString(m.toTransfer());
+            messagingTemplate.convertAndSend("/enterprise/" + enterprise.getId() + "/queue/updates", json);
+        } catch (JsonProcessingException e) {
+            log.error("Error al enviar la notificación", e);
         }
     }
 
