@@ -91,6 +91,40 @@ if (ws.receive) {
         }
         else if(m.type == "ACTUALIZAR_TABLA_PARKING") {
             console.log(m.text);
+            let jsonParking = JSON.parse(m.text);
+            let table = document.getElementById("tabla-parkings-empresa");
+            let row = document.createElement("tr");
+            
+            row.innerHTML = `<td id="fila1"><a class="nav-link bg-success" >${jsonParking.name}</a></td>
+            <td id="fila1"><a class="nav-link bg-success">${jsonParking.address}</a></td>
+            <td id="fila1"><a class="nav-link bg-success">${jsonParking.cp}</a></td>
+            <td id="fila1"><a class="nav-link bg-success">${jsonParking.city}</a></td>
+            <td id="fila1"><a class="nav-link bg-success">${jsonParking.country}</a></td>
+            <td id="fila1"><a class="nav-link bg-success">${jsonParking.telephone}</a></td>
+            <td id="fila1"><a class="nav-link bg-success">${jsonParking.openingTime}</a></td>
+            <td id="fila1"><a class="nav-link bg-success">${jsonParking.closingTime}</a></td>
+            <td id="fila1"><a class="nav-link bg-success">${jsonParking.feePerHour}</a></td>`;
+            row.classList.add('bg-success');
+            row.className="bg-success";
+            table.appendChild(row);
+        }
+        else if(m.type == "ACTUALIZAR_ESTADO_REQUEST"){
+
+            let jsonState = JSON.parse(m.text);
+            let id = document.getElementById("estado-" + jsonState.id);
+            let id2 = document.getElementById("estado2-" + jsonState.id );
+
+            id.innerHTML = jsonState.state;
+            id2.innerHTML = jsonState.state;
+            if(jsonState.state == "Aceptada"){
+                id.className = "estado-aceptado";
+                id2.className = "estado-aceptado";
+
+            }else if(jsonState.state == "Rechazada"){
+                id.className = "estado-rechazado";
+                id2.className = "estado-rechazado";
+            }
+            
         }
     }
 }

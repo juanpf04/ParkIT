@@ -173,5 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			// 			.filter(p -> calcularDistancia(lat, lon, p.getLatitude(), p.getLongitude()) <= radio)
 			// 			.collect(Collectors.toList());
 			// }
+
+            
     });
 });

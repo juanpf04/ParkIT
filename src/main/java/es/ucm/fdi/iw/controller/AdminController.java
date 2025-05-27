@@ -97,10 +97,10 @@ public class AdminController {
     /**
      * Guarda el parking al aceptar la solicitud de a.
      *
-     * @param id ID de la request.
-     * @param latitud Latitud del parking.
+     * @param id       ID de la request.
+     * @param latitud  Latitud del parking.
      * @param longitud Longitud del parking.
-     * @param session Sesión HTTP del usuario.
+     * @param session  Sesión HTTP del usuario.
      * @return Actualiza la vista con un modal de éxito o error.
      */
     @PostMapping("/guardarParking/{id}")
@@ -154,14 +154,35 @@ public class AdminController {
             request.setEnabled(false);
             request.setState("Aceptada");
             entityManager.persist(request);
+            entityManager.flush(); // to get Id before commit
             Admin admin = (Admin) session.getAttribute("u");
-            //notificarEstadoParking(admin, p, request);
+            notificarEstadoParking(admin, p, request);
             notificarParkingNuevo(admin, p);
+            notificarActualizacionEstado(admin, request);
 
             return ResponseEntity.ok("Parking añadido correctamente");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al añadir el parking: " + e.getMessage());
+        }
+    }
+
+    private void notificarActualizacionEstado(Admin admin, Request request) {
+        try {
+            Message m = new Message();
+            Enterprise enterprise = request.getEnterprise();
+            m.setRecipient(enterprise);
+            m.setSender(admin);
+            m.setDateSent(LocalDateTime.now());
+            m.setType(Type.ACTUALIZAR_ESTADO_REQUEST);
+            ObjectMapper mapper = new ObjectMapper();
+            m.setText(mapper.writeValueAsString(request.toTransfer()));
+            entityManager.persist(m);
+            entityManager.flush(); // to get Id before commit
+            String json = mapper.writeValueAsString(m.toTransfer());
+            messagingTemplate.convertAndSend("/enterprise/" + enterprise.getId() + "/queue/updates", json);
+        } catch (JsonProcessingException e) {
+            log.error("Error al enviar la notificación", e);
         }
     }
 
@@ -174,8 +195,7 @@ public class AdminController {
             m.setDateSent(LocalDateTime.now());
             m.setType(Type.ACTUALIZAR_TABLA_PARKING);
             ObjectMapper mapper = new ObjectMapper();
-            m.setText(mapper.writeValueAsString(parking.getName()));
-            log.info("Notificando nuevo parking: {}", mapper.writeValueAsString(parking.toTransfer()));
+            m.setText(mapper.writeValueAsString(parking.toTransfer()));
             entityManager.persist(m);
             entityManager.flush(); // to get Id before commit
             String json = mapper.writeValueAsString(m.toTransfer());
@@ -188,7 +208,7 @@ public class AdminController {
     /**
      * Notificar si se ha aceptado la solicitud de añadir o eliminar
      *
-     * @param admin Administrador que envía el mensaje
+     * @param admin   Administrador que envía el mensaje
      * @param parking Parking que se añade o se elimina
      * @param request Solicitud de añadir o eliminar.
      */
@@ -221,7 +241,7 @@ public class AdminController {
     /**
      * Elimina el parking al aceptar la solicitud de eliminar.
      *
-     * @param id ID de la request.
+     * @param id      ID de la request.
      * @param session Sesión HTTP del usuario.
      * @return Actualiza la vista con un modal de éxito o error.
      */
@@ -251,6 +271,7 @@ public class AdminController {
             entityManager.persist(request);
             Admin admin = (Admin) session.getAttribute("u");
             notificarEstadoParking(admin, parking, request);
+            notificarActualizacionEstado(admin, request);
 
             return ResponseEntity.ok("Parking eliminado correctamente");
         } catch (Exception e) {
@@ -262,7 +283,7 @@ public class AdminController {
     /**
      * Elimina la request al rechazarla.
      *
-     * @param id ID de la request.
+     * @param id      ID de la request.
      * @param session Sesión HTTP del usuario.
      * @return Actualiza la vista con un modal de éxito o error.
      */
@@ -283,7 +304,7 @@ public class AdminController {
             entityManager.persist(request);
             Admin admin = (Admin) session.getAttribute("u");
             notificarEliminarRequest(admin, request);
-
+            notificarActualizacionEstado(admin, request);
             return ResponseEntity.ok("Request eliminada correctamente");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -294,7 +315,7 @@ public class AdminController {
     /**
      * Notificar si se ha rechazado la solicitud de añadir o eliminar
      *
-     * @param admin Administrador que envía el mensaje
+     * @param admin   Administrador que envía el mensaje
      * @param request Solicitud de añadir o eliminar.
      */
     private void notificarEliminarRequest(Admin admin, Request request) {

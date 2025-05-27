@@ -177,7 +177,7 @@ function guardarParking(button) {
 
           setTimeout(() => {
             error.remove();
-          }, 3000);
+          }, 300000000);
         });
       }
     })
