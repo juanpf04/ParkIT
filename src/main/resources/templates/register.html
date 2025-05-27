@@ -12,12 +12,10 @@
     <main class="flex-shrink-0">
         <div class="container">
             <!-- Método postRegister está en el rootController.. -->
-            <form class="form-signin" method="post" th:action="@{/postRegister}">
-                <h4 class="text-center m-3">Registro del parker</h4>
-                
+            <form class="form-signin" method="post" th:action="@{/register}">
+                <h4 class="text-center m-3" id="titulo-formulario">Registro de Parker</h4>  
                 <label for="Usuario" class="form-label">Usuario</label>
                 <select class="form-select form-select-lg mb-3" name="role" id="role">
-                    <option value="" selected disabled>Selecciona el Usuario</option>
                     <option th:value="USER">USER</option>
                     <option th:value="ENTERPRISE">ENTERPRISE</option>
                 </select>
@@ -49,18 +47,46 @@
                         <input type="tel" class="form-control" id="telephone" name="telephone" required placeholder="684438593">
                     </div> 
                 </div>
+                <div id="parkerAttributes">
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <label for="firstName" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" name="firstName" id="firstName">
+                        </div>
+                        <div class="col-4">
+                            <label for="secondName" class="form-label" >Apellido</label>
+                            <input type="text" class="form-control" name="secondName" id="secondName">
+                        </div>
+                        <div class="col-4">
+                            <label for="dni"  class="form-label">DNI</label>
+                            <input type="text" class="form-control" name="dni" id="dni">
+                        </div>
+                    </div>
+                </div>
+                <div id="enterpriseAttributes">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label for="CIF" class="form-label">CIF</label>
+                            <input type="text" class="form-control" name="CIF" id="CIF">
+                        </div>
+                        <div class="col-6">
+                            <label for="enterpriseName"  class="form-label">Nombre Empresa</label>
+                            <input type="text" class="form-control" name="enterpriseName" id="enterpriseName">
+                        </div>
+                    </div>
+                </div>
 
-            <div class="row mb-3">
-                <div class="col-4">
-                    <button type="submit" class="btn btn-lg btn-outline-dark w-100">Registrarse</button>
+                <div class="row mb-3">
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-lg btn-outline-dark w-100">Registrarse</button>
+                    </div>
+                    <div class="col-4">
+                        <button type="reset" class="btn btn-lg btn-outline-dark w-100">Borrar datos</button>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" id="enviar-prueba" class="btn btn-lg btn-outline-dark w-100" onclick="addTestValues()">Rellenar</button>
                 </div>
-                <div class="col-4">
-                    <button type="reset" class="btn btn-lg btn-outline-dark w-100">Borrar datos</button>
-                </div>
-                <div class="col-4">
-                    <button type="button" id="enviar-prueba" class="btn btn-lg btn-outline-dark w-100" onclick="addTestValues()">Rellenar</button>
-                </div>
-            </div>      
+            </div> 
         <script>
         function addTestValues() {
             document.getElementById('username').value = 'Papot';
@@ -70,10 +96,10 @@
             document.getElementById('telephone').value = '68430615';
         }
         </script>   
-            </form>
+        </form>
         </div>
     </main>
-
+    <script th:src="@{/js/registro.js}">    </script>
     <th:block th:replace="~{fragments/footer.html :: footer}" />
 </body>
 
