@@ -1,10 +1,8 @@
-const { createElement } = require("react");
-
 let dropdownMenu = document.getElementById('menuDropdownNotis');
 function renderNoti(msg) {
     const li = document.createElement('li');
-    li.className = 'dropdown-item';
-    li.innerHTML = `
+            li.className = 'dropdown-item';
+            li.innerHTML = `
                         <strong>Notificación de: ${msg.from}</strong><br>
                         <small>${msg.text}</small><br>
                         <small class="text-muted">${new Date(msg.sent).toLocaleString('es-ES')}</small>
@@ -12,7 +10,7 @@ function renderNoti(msg) {
     console.log("rendering notification: ", msg);
     li.addEventListener('click', () => {
         li.remove();
-        if (dropdownMenu.children.length === 0) {
+        if(dropdownMenu.children.length === 0) {
             dropdownMenu.appendChild(sinNotis);
         }
     });
@@ -29,32 +27,32 @@ function renderNoti(msg) {
 const sinNotis = document.createElement('li');
 sinNotis.className = 'dropdown-item text-muted';
 sinNotis.textContent = 'No hay notificaciones';
-if (config.user) {
-    go(config.rootUrl + "/user/received", "GET").then(ms => {
-        if (ms.length === 0) {
+if(config.user){
+    go(config.rootUrl + "/user/received", "GET").then(ms =>{
+        if(ms.length === 0) {
             dropdownMenu.appendChild(sinNotis);
-        } else {
+        }else {
             ms.forEach(m => dropdownMenu.appendChild(renderNoti(m)))
         }
-
+        
     });
-} else if (config.enterprise) {
-    go(config.rootUrl + "/enterprise/received", "GET").then(ms => {
-        if (ms.length === 0) {
+}else if(config.enterprise){
+    go(config.rootUrl + "/enterprise/received", "GET").then(ms =>{
+        if(ms.length === 0) {
             dropdownMenu.appendChild(sinNotis);
-        } else {
+        }else {
             ms.forEach(m => dropdownMenu.appendChild(renderNoti(m)))
         }
-
+        
     });
-} else if (config.admin) {
-    go(config.rootUrl + "/admin/received", "GET").then(ms => {
-        if (ms.length === 0) {
+}else if(config.admin){
+    go(config.rootUrl + "/admin/received", "GET").then(ms =>{
+        if(ms.length === 0) {
             dropdownMenu.appendChild(sinNotis);
-        } else {
+        }else {
             ms.forEach(m => dropdownMenu.appendChild(renderNoti(m)))
         }
-
+        
     });
 }
 
@@ -67,10 +65,10 @@ if (ws.receive) {
     ws.receive = (m) => {
 
         oldFn(m); // llama al manejador anterior
-
+        
         if (m.type == "MOSTRAR") {
 
-            if (dropdownMenu.contains(sinNotis)) {
+            if(dropdownMenu.contains(sinNotis)) {
                 dropdownMenu.removeChild(sinNotis);
             }
             dropdownMenu.appendChild(renderNoti(m));
@@ -89,7 +87,7 @@ if (ws.receive) {
             const reserva = document.createElement('li');
             reserva.textContent = reservaJSON.startDate + " " + reservaJSON.startTime + " - " + reservaJSON.endDate + " " + reservaJSON.endTime;
             ul.appendChild(reserva);
-        } else if (m.type == "ACTUALIZAR_TABLA_ADMIN") {
+        }else if (m.type == "ACTUALIZAR_TABLA_ADMIN") {
             console.log(m.text);
             console.log("recibidooooo");
 
@@ -143,4 +141,6 @@ function mostrarNuevaNotificacion(msg) {
         }
     }, 5000);
 }
+
+
 
