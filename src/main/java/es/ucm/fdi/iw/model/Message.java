@@ -47,7 +47,7 @@ public class Message implements Transferable<Message.Transfer> {
 	private String text;
 
 	public enum Type {
-        MOSTRAR, ACTUALIZAR
+        MOSTRAR, ACTUALIZAR, ACTUALIZAR_TABLA_ADMIN
     }
 
     @Enumerated(EnumType.STRING)

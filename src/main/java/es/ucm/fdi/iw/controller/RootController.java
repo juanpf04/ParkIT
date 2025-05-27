@@ -3,6 +3,7 @@ package es.ucm.fdi.iw.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,12 +13,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import io.micrometer.common.lang.Nullable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import es.ucm.fdi.iw.model.*;
+import es.ucm.fdi.iw.model.Message.Type;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +44,9 @@ public class RootController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @ModelAttribute
     public void populateModel(HttpSession session, Model model) {
@@ -104,6 +113,8 @@ public class RootController {
                 enterprise.setCIF(cif);
                 
                 entityManager.persist(enterprise);
+
+                notificarRegistro(enterprise);
                 
                 break;
 
@@ -122,6 +133,8 @@ public class RootController {
                 parker.setSecondName(secondName);
 
                 entityManager.persist(parker);
+
+                notificarRegistro(parker);
                 
                 break;
 
@@ -129,10 +142,32 @@ public class RootController {
                 break;
         }
 
+        
+
         redirectAttributes.addFlashAttribute("success", "Usuario registrado con exito!");
         
         return "redirect:/login";
     }
+
+    private void notificarRegistro(User user) {
+		try {
+			Message m = new Message();
+			m.setRecipient(null);
+			m.setSender(user);
+			m.setDateSent(LocalDateTime.now());
+			
+			ObjectMapper mapper = new ObjectMapper();
+			// Ejemplo de pasar un JSON como cuerpo del mensaje
+			m.setText(mapper.writeValueAsString(user.toTransfer()));
+			m.setType(Type.ACTUALIZAR_TABLA_ADMIN);
+			entityManager.persist(m);
+			entityManager.flush(); 
+			String json = mapper.writeValueAsString(m.toTransfer());
+			messagingTemplate.convertAndSend("/topic/admin", json);
+		} catch (JsonProcessingException e) {
+			log.error("Error al enviar la notificación de registro", e);
+		}
+	}
 
     @GetMapping("/")
     public String index(Model model) {

@@ -12,6 +12,23 @@
     <main class="flex-shrink-0">
         <div class="container">
             <h1 class="mt-5">Administración</h1>
+
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nombre de usuario</th>
+                        <th>Tipo</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla">
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.username}">username</td>
+                        <td th:text="${user.role}">role</td>
+                        <td th:text="${user.email}">email</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </main>
 
