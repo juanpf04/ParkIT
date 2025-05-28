@@ -179,6 +179,27 @@ public class EnterpriseController {
         return "enterprise-plazas";
     }
 
+        /**
+     * Muestra el formulario de modificar parking
+     * 
+     * @param parkingId ID del parking.
+     * @param model     Modelo para la vista.
+     * @return Carga la vista de las plazas del parking.
+     */
+    @GetMapping("/parking/{parkingId}/modify")
+    public String enterpriseModifyParking(@PathVariable Long parkingId, Model model) {
+
+        Parking parking = entityManager.find(Parking.class, parkingId);
+
+        //Si el parking no existe =>fatal.
+        if (parking == null) {
+            return "redirect:/error";
+        }
+        model.addAttribute("parking", parking);
+
+        return "modify-parking";
+    }
+
     @GetMapping("/add-plaza")
     public String addPlaza(Model model) {
         return "add-plaza";

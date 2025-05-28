@@ -404,6 +404,8 @@ label:hover~label {
   }
 }
 
+
+
 .boton-parkings{
   background-color: #38b6ff;
   color: white;
@@ -421,5 +423,28 @@ label:hover~label {
 
 .new-row-parkigns {
   background: #27ae60;
+}
+
+
+@keyframes shadow2-inset-center {
+  0% {
+    -webkit-box-shadow: inset 0 0 0 0 #695310;
+    box-shadow: inset 0 0 0 0 #695310;
+  }
+
+  100% {
+    -webkit-box-shadow: inset 0 0 14px 0px #695310;
+    box-shadow: inset 0 0 14px 0px #695310;
+  }
+}
+
+.boton-modificar-parkings {
+  background-color: #553909;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
