@@ -814,30 +814,6 @@ public class UserController {
 	}
 
 	/**
-	 * Actualiza la imagen de perfil de un usuario.
-	 *
-	 * @param id   ID del usuario.
-	 * @param file Archivo de la imagen.
-	 * @return Mapa con la URL de la nueva imagen.
-	 * @throws RuntimeException Si ocurre un error al guardar la imagen.
-	 */
-	@PostMapping("/user/{id}/pic")
-	@ResponseBody
-	public Map<String, String> updateProfilePic(@PathVariable long id, @RequestParam("file") MultipartFile file) {
-		// Guarda la imagen en el servidor
-		File f = localData.getFile("user", id + ".jpg");
-		try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(f))) {
-			stream.write(file.getBytes());
-		} catch (IOException e) {
-			throw new RuntimeException("Error al guardar la imagen", e);
-		}
-
-		// Devuelve la URL de la nueva imagen
-		String newPicUrl = "/user/" + id + "/pic";
-		return Map.of("newPicUrl", newPicUrl);
-	}
-
-	/**
 	 * Muestra una página de error genérica.
 	 *
 	 * @param model   Modelo para la vista.
