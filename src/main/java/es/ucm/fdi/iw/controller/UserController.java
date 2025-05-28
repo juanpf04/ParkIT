@@ -372,7 +372,7 @@ public class UserController {
 			m.setRecipient(enterprise);
 			m.setSender(user);
 			m.setDateSent(LocalDateTime.now());
-			
+
 			ObjectMapper mapper = new ObjectMapper();
 			// Ejemplo de pasar un JSON como cuerpo del mensaje
 			m.setText(mapper.writeValueAsString(reserve.toTransfer()));
@@ -549,7 +549,8 @@ public class UserController {
 	@Transactional
 	public String cancelReserve(@PathVariable long id, Model model) {
 		Reserve reserve = entityManager.find(Reserve.class, id);
-		if (reserve != null && reserve.getState() == Reserve.State.CONFIRMED) {
+		if (reserve != null && (reserve.getState() == Reserve.State.CONFIRMED
+				|| reserve.getState() == Reserve.State.PENDING)) {
 			// Actualizamos el saldo tanto en la base de datos como en la sesión
 			User user = reserve.getVehicle().getParker();
 			User sessionUser = (User) model.getAttribute("u");
@@ -565,18 +566,40 @@ public class UserController {
 			reserve.setState(Reserve.State.CANCELLED);
 			user.setWallet(userWallet + price);
 			sessionUser.setWallet(userWallet + price);
+			entityManager.persist(reserve);
 
 			Enterprise enterprise = reserve.getSpot().getParking().getEnterprise();
 			double enterpriseWallet = enterprise.getWallet();
 			enterprise.setWallet(enterpriseWallet - price);
 
 			notificarCancelacionReserva(user, reserve, enterprise);
+			notificarCancelasTabla(user, reserve, enterprise);
 
 			model.addAttribute("success", "Reserva cancelada con éxito");
 		} else {
-			model.addAttribute("error", "Reserva ya canelada o no válida");
+			model.addAttribute("error", "Reserva ya cancelada o no válida");
 		}
 		return myReserves(model);
+	}
+
+	private void notificarCancelasTabla(User user, Reserve reserve, Enterprise enterprise) {
+		try {
+			Message m = new Message();
+			m.setRecipient(enterprise);
+			m.setSender(user);
+			m.setDateSent(LocalDateTime.now());
+
+			ObjectMapper mapper = new ObjectMapper();
+			// Ejemplo de pasar un JSON como cuerpo del mensaje
+			m.setText(mapper.writeValueAsString(reserve.toTransfer()));
+			m.setType(Type.ACTUALIZAR_CANCELACION);
+			entityManager.persist(m);
+			entityManager.flush(); // to get Id before commit
+			String json = mapper.writeValueAsString(m.toTransfer());
+			messagingTemplate.convertAndSend("/enterprise/" + enterprise.getId() + "/queue/updates", json);
+		} catch (JsonProcessingException e) {
+			log.error("Error al enviar la notificación de reserva", e);
+		}
 	}
 
 	/**
@@ -593,7 +616,8 @@ public class UserController {
 		m.setRecipient(enterprise);
 		m.setSender(user);
 		m.setDateSent(LocalDateTime.now());
-		m.setText("El usuario " + user.getUsername() + "ha cancelado una reserva en "
+		m.setType(Type.MOSTRAR);
+		m.setText("El usuario " + user.getUsername() + " ha cancelado una reserva en "
 				+ reserve.getSpot().getParking().getName() + " desde "
 				+ reserve.getStartDate() + " a " + reserve.getEndDate() + " de " + reserve.getStartTime() + " a "
 				+ reserve.getEndTime());
@@ -854,11 +878,11 @@ public class UserController {
 	}
 
 	/**
-     * Devuelve el número de mensajes no leídos en formato JSON.
-     *
-     * @param session Sesión HTTP del usuario.
-     * @return JSON con el número de mensajes no leídos.
-     */
+	 * Devuelve el número de mensajes no leídos en formato JSON.
+	 *
+	 * @param session Sesión HTTP del usuario.
+	 * @return JSON con el número de mensajes no leídos.
+	 */
 	@GetMapping(path = "unread", produces = "application/json")
 	@ResponseBody
 	public String checkUnread(HttpSession session) {
@@ -871,15 +895,15 @@ public class UserController {
 	}
 
 	/**
-     * Envía un mensaje a un usuario.
-     *
-     * @param id ID del usuario destinatario.
-     * @param o Nodo JSON con el contenido del mensaje.
-     * @param model Modelo para la vista.
-     * @param session Sesión HTTP del usuario.
-     * @return Respuesta JSON con el estado del envío.
-     * @throws JsonProcessingException Si ocurre un error al serializar el mensaje.
-     */
+	 * Envía un mensaje a un usuario.
+	 *
+	 * @param id      ID del usuario destinatario.
+	 * @param o       Nodo JSON con el contenido del mensaje.
+	 * @param model   Modelo para la vista.
+	 * @param session Sesión HTTP del usuario.
+	 * @return Respuesta JSON con el estado del envío.
+	 * @throws JsonProcessingException Si ocurre un error al serializar el mensaje.
+	 */
 	@PostMapping("/{id}/msg")
 	@ResponseBody
 	@Transactional
@@ -924,14 +948,14 @@ public class UserController {
 	}
 
 	/**
-     * Añade saldo a la cartera del usuario.
-     *
-     * @param id ID del usuario.
-     * @param session Sesión HTTP del usuario.
-     * @param model Modelo para la vista.
-     * @param monto Cantidad a añadir.
-     * @return Redirección al perfil del usuario.
-     */
+	 * Añade saldo a la cartera del usuario.
+	 *
+	 * @param id      ID del usuario.
+	 * @param session Sesión HTTP del usuario.
+	 * @param model   Modelo para la vista.
+	 * @param monto   Cantidad a añadir.
+	 * @return Redirección al perfil del usuario.
+	 */
 	@PostMapping("/{id}/cargar-saldo")
 	@Transactional
 	public String cargarSaldo(@PathVariable long id, HttpSession session, Model model,

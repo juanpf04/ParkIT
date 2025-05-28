@@ -4,16 +4,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import jakarta.persistence.*;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.SequenceGenerator;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,18 +17,17 @@ import lombok.AllArgsConstructor;
  */
 @Entity
 @NamedQueries({
-	@NamedQuery(name="Message.countUnread",
-	query="SELECT COUNT(m) FROM Message m "
-			+ "WHERE m.recipient.id = :userId AND m.dateRead = null")
+		@NamedQuery(name = "Message.countUnread", query = "SELECT COUNT(m) FROM Message m "
+				+ "WHERE m.recipient.id = :userId AND m.dateRead = null")
 })
 @Data
 public class Message implements Transferable<Message.Transfer> {
-	
-	private static Logger log = LogManager.getLogger(Message.class);	
-	
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
-    @SequenceGenerator(name = "gen", sequenceName = "gen")
+
+	private static Logger log = LogManager.getLogger(Message.class);
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
+	@SequenceGenerator(name = "gen", sequenceName = "gen")
 	private long id;
 	@ManyToOne
 	private User sender;
@@ -47,21 +36,22 @@ public class Message implements Transferable<Message.Transfer> {
 	private String text;
 
 	public enum Type {
-        MOSTRAR, ACTUALIZAR
-    }
+		MOSTRAR, ACTUALIZAR, ACTUALIZAR_CANCELACION
+	}
 
-    @Enumerated(EnumType.STRING)
-    private Type type;
-	
+	@Enumerated(EnumType.STRING)
+	private Type type;
+
 	private LocalDateTime dateSent;
 	private LocalDateTime dateRead;
-	
+
 	/**
 	 * Objeto para persistir a/de JSON
+	 * 
 	 * @author mfreire
 	 */
-    @Getter
-    @AllArgsConstructor
+	@Getter
+	@AllArgsConstructor
 	public static class Transfer {
 		private String from;
 		private String to;
@@ -70,12 +60,13 @@ public class Message implements Transferable<Message.Transfer> {
 		private String type;
 		private String text;
 		long id;
+
 		public Transfer(Message m) {
 			this.from = m.getSender().getUsername();
 			this.to = m.getRecipient().getUsername();
 			this.sent = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(m.getDateSent());
-			this.received = m.getDateRead() == null ?
-					null : DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(m.getDateRead());
+			this.received = m.getDateRead() == null ? null
+					: DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(m.getDateRead());
 			this.text = m.getText();
 			this.id = m.getId();
 			this.type = m.type.toString();
@@ -85,11 +76,10 @@ public class Message implements Transferable<Message.Transfer> {
 	@Override
 	public Transfer toTransfer() {
 		return new Transfer(
-			sender.getUsername(),  
-			recipient == null ? null : recipient.getUsername(), 
-			DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateSent),
-			dateRead == null ? null : DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateRead), type.toString(),
-			text, id
-        );
-    }
+				sender.getUsername(),
+				recipient == null ? null : recipient.getUsername(),
+				DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateSent),
+				dateRead == null ? null : DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateRead), type.toString(),
+				text, id);
+	}
 }

@@ -75,7 +75,7 @@ if (ws.receive) {
             dropdownMenu.appendChild(renderNoti(m));
             mostrarNuevaNotificacion(m);
         }
-        else { // ACTUALIZAR
+        else if(m.type == "ACTUALIZAR") { // ACTUALIZAR
             console.log(m.text);
             //Ejemplo de cómo convertir a JSON
             let reservaJSON = JSON.parse(m.text);
@@ -84,10 +84,27 @@ if (ws.receive) {
 
             let reservasTd = document.getElementById('reserves-' + spotId);
             let ul = reservasTd.querySelector("ul");
-
+            
             const reserva = document.createElement('li');
             reserva.textContent = reservaJSON.startDate + " " + reservaJSON.startTime + " - " + reservaJSON.endDate + " " + reservaJSON.endTime;
             ul.appendChild(reserva);
+            
+        }else if(m.type == "ACTUALIZAR_CANCELACION") {//elimina con el formato de ACTUALIZAR --> fechas
+            let reservaJSON = JSON.parse(m.text);
+            let spotId = reservaJSON.spotId;
+            console.log(spotId);
+
+            let reservasTd = document.getElementById('reserves-' + spotId);
+            let ul = reservasTd.querySelector("ul");
+
+            const reservaText = reservaJSON.startDate + " " + reservaJSON.startTime + " - " + reservaJSON.endDate + " " + reservaJSON.endTime;
+            const items = ul.querySelectorAll('li');
+            items.forEach(item => {
+                if (item.textContent.trim() === reservaText) {
+                    ul.removeChild(item);
+                }
+            });
+
         }
     }
 }
