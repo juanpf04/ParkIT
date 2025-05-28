@@ -1,0 +1,134 @@
+<div th:fragment="register-form">
+    <form class="contenido-formulario active needs-validation" method="post" th:action="@{/register}" novalidate>
+        <h2 class="form-signin-heading" id="titulo">Registro</h2>
+        <div class="row">
+            <label for="tamanyo">Tipo de usuario</label>
+            <select class="form-select form-select-lg mb-3" name="role" id="role" required>
+                <option th:value="USER">Parker</option>
+                <option th:value="ENTERPRISE">Empresa</option>
+            </select>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="username" class="form-label">Nombre de usuario</label>
+                <input type="text" id="username" name="username" class="form-control" placeholder="Username"
+                    minlength="4" maxlength="20" required="required">
+                <div class="invalid-feedback">
+                    El nombre de usuario debe tener entre 4 y 20 caracteres.
+                </div>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password"
+                    minlength="6" maxlength="20" required="required">
+                <div class="invalid-feedback">
+                    La contraseña debe tener entre 6 y 20 caracteres.
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
+                    placeholder="Password" minlength="6" maxlength="20" required="required">
+                <div class="invalid-feedback">
+                    Las contraseñas no coinciden
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">Correo</label>
+                <input type="text" id="email" name="email" class="form-control" placeholder="Password"
+                    required="required">
+                <div class="invalid-feedback">
+                    El correo es obligatorio.
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input type="text" id="telefono" name="telefono" class="form-control" placeholder="Password"
+                    minlength="9" maxlength="9" required="required">
+                <div class="invalid-feedback">
+                    Debe tener 9 dígitos.
+                </div>
+            </div>
+        </div>
+        <div id="parkeratributes">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="dni" class="form-label">DNI</label>
+                    <input type="text" id="dni" name="dni" class="form-control" placeholder="DNI" minlength="9"
+                        maxlength="9" required="required">
+                    <div class="invalid-feedback">
+                        El DNI debe tener 9 caracteres.
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Nombre" minlength="2"
+                        maxlength="20" required="required">
+                    <div class="invalid-feedback">
+                        El nombre debe tener entre 2 y 20 caracteres.
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="apellidos" class="form-label">Apellidos</label>
+                    <input type="text" id="apellidos" name="apellidos" class="form-control" placeholder="Apellidos"
+                        minlength="2" maxlength="20" required="required">
+                    <div class="invalid-feedback">
+                        Los apellidos deben tener entre 2 y 20 caracteres.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="enterpriseatributes">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="cif" class="form-label">CIF</label>
+                    <input type="text" id="cif" name="cif" class="form-control" placeholder="CIF" minlength="9"
+                        maxlength="9" required="required">
+                    <div class="invalid-feedback">
+                        El CIF debe tener 9 caracteres.
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="nombreEmpresa" class="form-label">Nombre de la empresa</label>
+                    <input type="text" id="nombreEmpresa" name="nombreEmpresa" class="form-control"
+                        placeholder="Nombre de la empresa" minlength="2" maxlength="20" required="required">
+                    <div class="invalid-feedback">
+                        El nombre de la empresa debe tener entre 2 y 20 caracteres.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Registrarse</button>
+    </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            console.log("script");
+
+            document.getElementById("role").addEventListener("change", function () {
+                var role = document.getElementById("role").value;
+                console.log(role);
+                if (role == "USER") {
+                    document.getElementById("parkeratributes").style.display = "block";
+                    document.getElementById("enterpriseatributes").style.display = "none";
+                    document.getElementById("titulo").innerHTML = "Registro Parker";
+                } else if (role == "ENTERPRISE") {
+                    document.getElementById("parkeratributes").style.display = "none";
+                    document.getElementById("enterpriseatributes").style.display = "block";
+                    document.getElementById("titulo").innerHTML = "Registro Empresa";
+                }
+            });
+
+        });
+    </script>
+</div>

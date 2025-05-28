@@ -72,6 +72,12 @@ public class AdminController {
 
     @GetMapping("/")
     public String index(Model model) {
+        List<User> users = entityManager.createNamedQuery("User.all", User.class)
+                .getResultList();
+        System.out.println("--------------------------------------------- " + users);
+        System.out.println("Users: " + users);
+        model.addAttribute("usuarios", users);
+
         return "admin";
     }
 
@@ -97,10 +103,10 @@ public class AdminController {
     /**
      * Guarda el parking al aceptar la solicitud de a.
      *
-     * @param id ID de la request.
-     * @param latitud Latitud del parking.
+     * @param id       ID de la request.
+     * @param latitud  Latitud del parking.
      * @param longitud Longitud del parking.
-     * @param session Sesión HTTP del usuario.
+     * @param session  Sesión HTTP del usuario.
      * @return Actualiza la vista con un modal de éxito o error.
      */
     @PostMapping("/guardarParking/{id}")
@@ -167,7 +173,7 @@ public class AdminController {
     /**
      * Notificar si se ha aceptado la solicitud de añadir o eliminar
      *
-     * @param admin Administrador que envía el mensaje
+     * @param admin   Administrador que envía el mensaje
      * @param parking Parking que se añade o se elimina
      * @param request Solicitud de añadir o eliminar.
      */
@@ -200,7 +206,7 @@ public class AdminController {
     /**
      * Elimina el parking al aceptar la solicitud de eliminar.
      *
-     * @param id ID de la request.
+     * @param id      ID de la request.
      * @param session Sesión HTTP del usuario.
      * @return Actualiza la vista con un modal de éxito o error.
      */
@@ -241,7 +247,7 @@ public class AdminController {
     /**
      * Elimina la request al rechazarla.
      *
-     * @param id ID de la request.
+     * @param id      ID de la request.
      * @param session Sesión HTTP del usuario.
      * @return Actualiza la vista con un modal de éxito o error.
      */
@@ -273,7 +279,7 @@ public class AdminController {
     /**
      * Notificar si se ha rechazado la solicitud de añadir o eliminar
      *
-     * @param admin Administrador que envía el mensaje
+     * @param admin   Administrador que envía el mensaje
      * @param request Solicitud de añadir o eliminar.
      */
     private void notificarEliminarRequest(Admin admin, Request request) {
