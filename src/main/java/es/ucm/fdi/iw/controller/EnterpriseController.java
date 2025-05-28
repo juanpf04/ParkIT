@@ -88,11 +88,11 @@ public class EnterpriseController {
     }
 
     /**
-	 * Muestra los parkings de la empresa.
+     * Muestra los parkings de la empresa.
      * 
-	 * @param model    Modelo para la vista.
-	 * @return Carga la vista de los parkings de la empresa.
-	 */
+     * @param model Modelo para la vista.
+     * @return Carga la vista de los parkings de la empresa.
+     */
     @GetMapping("/parkings")
     public String enterpriseParkings(Model model) {
         User user = (User) model.getAttribute("u");
@@ -251,7 +251,7 @@ public class EnterpriseController {
             message.setDateSent(LocalDateTime.now());
             message.setText(notificationText);
             message.setType(Type.MOSTRAR);
-            
+
             entityManager.persist(message);
 
             // Convertir el mensaje a JSON y enviarlo
@@ -349,4 +349,50 @@ public class EnterpriseController {
         session.setAttribute("unread", unread);
         return "{\"unread\": " + unread + "}";
     }
+
+    @GetMapping("/parking/{parkingId}/modify")
+    public String modifyParking(@PathVariable Long parkingId, Model model) {
+        Parking parking = entityManager.find(Parking.class, parkingId);
+        if (parking == null) {
+            return "redirect:/error";
+        }
+        model.addAttribute("parking", parking.toTransfer());
+
+        return "modify-parking";
+    }
+
+    @PostMapping("/parking/{id}/confirm-modify")
+    @Transactional
+    public String postMethodName(@PathVariable long id, @RequestParam String name, @RequestParam String address,
+            @RequestParam String city, @RequestParam String country, @RequestParam String cp,
+            @RequestParam String openingTime, @RequestParam String closingTime, @RequestParam int totalSpots,
+            @RequestParam double feePerHour, @RequestParam int telephone, @RequestParam String email, Model model) {
+        
+        Parking parking = entityManager.find(Parking.class, id);
+        
+        parking.setName(name);
+        parking.setAddress(address);
+        parking.setCity(city);
+        parking.setCountry(country);
+        parking.setCp(Integer.parseInt(cp));
+        parking.setOpeningTime(LocalTime.parse(openingTime));
+        parking.setClosingTime(LocalTime.parse(closingTime));
+        parking.setFeePerHour(feePerHour);
+        parking.setTelephone(telephone);
+        parking.setEmail(email);
+        entityManager.merge(parking);
+        entityManager.flush();
+
+        List<Parking.Transfer> parkings = entityManager
+                .createNamedQuery("Parking.findByEnterpriseandEnabled", Parking.Transfer.class)
+                .setParameter("enterprise", parking.getEnterprise())
+                .setParameter("enabled", true)
+                .getResultList();
+        
+        model.addAttribute("parkings", parkings);
+        model.addAttribute("success", "Parking modificado correctamente.");
+
+        return "enterprise-parkings";
+    }
+
 }

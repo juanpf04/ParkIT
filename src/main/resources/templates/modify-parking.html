@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <th:block th:replace="~{fragments/head.html :: header}"></th:block>
+  <title>Añadir parking</title>
+</head>
+
+<body class="d-flex flex-column h-100">
+  <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+  <div class="container mt-3">
+    <h1>Añadir parking</h1>
+    <form th:action="@{'/enterprise/parking/' + ${parking.id} + '/confirm-modify'}" method="POST">
+      <div class="row mt-3">
+        <div class="col-5">
+          <label for="nombre" class="form-label">Nombre:</label>
+          <div class="input-group">
+            <input type="text" class="form-control" th:value="${parking.name}" name="name" id="name" aria-describedby="nombreId"
+              placeholder="Introduce el nombre del parking..." />
+          </div>
+        </div>
+
+        <div class="col-6">
+          <label for="calle" class="form-label">Calle:</label>
+          <div class="input-group">
+            <input type="text" class="form-control" th:value="${parking.address}" name="address" id="address" aria-describedby="calleId"
+              placeholder="Calle en la que se encuentra el parking..." />
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+
+        <div class="col-4">
+          <label for="ciudad" class="form-label">Ciudad:</label>
+          <div class="input-group">
+            <input type="text" class="form-control" th:value="${parking.city}" name="city" id="city" aria-describedby="ciudadId"
+              placeholder="Ciudad..." />
+          </div>
+        </div>
+
+        <div class="col-4">
+          <label for="ciudad" class="form-label">Pais:</label>
+          <div class="input-group">
+            <input type="text" class="form-control" th:value="${parking.country}" name="country" id="country" aria-describedby="ciudadId"
+              placeholder="Ciudad..." />
+          </div>
+        </div>
+
+        <div class="col-2">
+          <label for="cp" class="form-label">CP:</label>
+          <div class="input-group">
+            <input type="text" class="form-control" th:value="${parking.cp}" name="cp" id="cp" aria-describedby="cpId" placeholder="" />
+          </div>
+        </div>
+
+        <div class="col-3">
+          <label for="hora-apertura" class="form-label">Hora de apertura:</label>
+          <div class="input-group">
+            <input type="time" class="form-control" th:value="${parking.openingTime}" name="openingTime" id="openingTime"
+              aria-describedby="hora-aperturaId" placeholder="" />
+          </div>
+        </div>
+
+        <div class="col-3">
+          <label for="hora-cierre" class="form-label">Hora de cierre:</label>
+          <div class="input-group">
+            <input type="time" class="form-control" th:value="${parking.closingTime}" name="closingTime" id="closingTime" aria-describedby="hora-cierreId"
+              placeholder="" />
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-2">
+          <label for="numero-plazas" class="form-label">Número de plazas:</label>
+          <div class="input-group">
+            <input type="number" class="form-control" th:value="${parking.totalSpots}" name="totalSpots" id="totalSpots"
+              aria-describedby="numero-plazasId" placeholder="Plazas que tiene el parking..." />
+          </div>
+        </div>
+
+        <div class="col-2">
+          <label for="tarifa" class="form-label">Tarifa por hora:</label>
+          <div class="input-group">
+            <input type="number" th:value="${parking.feePerHour}" step="0.01" min="0" class="form-control" name="feePerHour" id="feePerHour"
+              aria-describedby="tarifaId" placeholder="Tarifa por hora del parking..." />
+          </div>
+        </div>
+
+        <div class="col-3">
+          <label for="telefono" class="form-label">Teléfono:</label>
+          <div class="input-group">
+            <input type="number" th:value="${parking.telephone}" class="form-control" name="telephone" id="telephone" aria-describedby="telefonoId"
+              placeholder="Teléfono de contacto..." />
+          </div>
+        </div>
+
+        <div class="col-5">
+          <label for="mail" class="form-label">E-mail:</label>
+          <div class="input-group">
+            <input type="email" th:value="${parking.email}" class="form-control" name="email" id="email" aria-describedby="emailId"
+              placeholder="Correo de contacto..." />
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row mt-5 mb-5">
+        <div class="col">
+          <button type="submit" id="enviar-solicitud" class="btn btn-lg btn-outline-dark w-100">Modificar</button>
+        </div>
+        <div class="col">
+          <button type="reset" class="btn btn-lg btn-outline-dark w-100">Borrar datos</button>
+        </div>
+      </div>
+
+    </div>
+  </form>
+  <footer th:replace="~{fragments/footer.html :: footer}"></footer>
+</body>
+
+</html>
