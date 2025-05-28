@@ -75,7 +75,8 @@ if (ws.receive) {
             dropdownMenu.appendChild(renderNoti(m));
             mostrarNuevaNotificacion(m);
         }
-        else { // ACTUALIZAR
+        else if (m.type == "ACTUALIZAR") {
+            
             console.log(m.text);
             //Ejemplo de cómo convertir a JSON
             let reservaJSON = JSON.parse(m.text);
@@ -88,6 +89,61 @@ if (ws.receive) {
             const reserva = document.createElement('li');
             reserva.textContent = reservaJSON.startDate + " " + reservaJSON.startTime + " - " + reservaJSON.endDate + " " + reservaJSON.endTime;
             ul.appendChild(reserva);
+        } else if (m.type == "ACTUALIZAR_ESTADO_REQUEST") {
+            // Tiene que mostrar el estado de la request.
+            console.log(m.text);
+
+            let estado = JSON.parse(m.text);
+
+            let estado_id= document.getElementById("estado-" + estado.id);
+            let estado_interno = document.getElementById("estado-interno-" + estado.id);
+
+            estado_id.innerHTML = estado.state;
+            estado_interno.innerHTML = estado.state;
+
+            if (estado.state == "Aceptada") {
+                estado_id.className = "estado-aceptado";
+                estado_interno.className = "estado-aceptado";
+            }
+            else if (estado.state == "Rechazada"){
+                estado_id.className = "estado-rechazado";
+                estado_interno.className = "estado-rechazado";
+            }
+        }else if (m.type == "ACTUALIZAR_FILA_PARKING") {
+            // Tiene que mostrar el estado de la request.
+            console.log(m.text);
+
+            let parkingInfo = JSON.parse(m.text);
+
+            let tableBody = document.getElementById("misParkingsTBody");
+
+            let createRow = document.createElement("tr");
+
+            createRow.innerHTML = ` 
+                    <td id="fila1"><a class="nav-link">${parkingInfo.name}</a></td>
+                    <td id="fila1"><a class="nav-link">${parkingInfo.address}</a></td>
+                    <td id="fila1"><a class="nav-link">${parkingInfo.cp}</a></td>
+                    <td id="fila1"><a class="nav-link">${parkingInfo.city}</a></td>
+                    <td id="fila1"><a class="nav-link">${parkingInfo.country}</a></td>
+                    <td id="fila1"><a class="nav-link">${parkingInfo.telephone}</a></td>
+                    <td id="fila1"><a class="nav-link">${parkingInfo.openingTime}</a></td>
+                    <td id="fila1"><a class="nav-link">${parkingInfo.closingTime}</a></td>
+                    <td id="fila1"><a class="nav-link">${parkingInfo.feePerHour}</a></td>`;    
+            
+            createRow.className = "new-row-parkings";
+
+            tableBody.appendChild(createRow);
+        } else if (m.type == "ACTUALIZAR_REQUEST_ELIMINAR") {
+            
+            console.log(m.text);
+
+            let estadoRequest = JSON.parse(m.text);
+
+            let elemento = document.getElementById("accordion-"+ estadoRequest.id);
+            let aviso = document.createElement("p");
+            aviso.innerHTML = estadoRequest.name;
+
+            elemento.appendChild(aviso);
         }
     }
 }

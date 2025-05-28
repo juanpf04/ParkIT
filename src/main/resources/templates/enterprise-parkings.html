@@ -41,7 +41,7 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="misParkingsTBody">
                 <tr th:each="parkings : ${parkings}">
                     <td id="fila1"><a class="nav-link" th:text="${parkings.name}">Nombre</a></td>
                     <td id="fila1"><a class="nav-link" th:text="${parkings.address}">Dirección</a></td>

@@ -11,6 +11,14 @@
 
     <main class="flex-shrink-0">
         <div class="container">
+
+            <div class="container-fluid row p-1">
+                <div th:if="${error}">
+                    <div id="error-message" class="alert alert-danger">
+                        <p th:text="${error}"></p>
+                    </div>
+                </div>
+            </div>
             <!-- Método postRegister está en el rootController.. -->
             <form class="form-signin" method="post" th:action="@{/register}">
                 <h4 class="text-center m-3" id="titulo-formulario">Registro de Parker</h4>  

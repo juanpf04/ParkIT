@@ -35,6 +35,7 @@ import es.ucm.fdi.iw.LocalData;
 import es.ucm.fdi.iw.controller.UserController.NoEsTuPerfilException;
 import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.Message.Type;
+import es.ucm.fdi.iw.model.Admin;
 import es.ucm.fdi.iw.model.Enterprise;
 import es.ucm.fdi.iw.model.Message;
 import es.ucm.fdi.iw.model.Parker;
@@ -343,6 +344,10 @@ public class EnterpriseController {
             // Convertir el mensaje a JSON y enviarlo
             ObjectMapper mapper = new ObjectMapper();
             String json = mapper.writeValueAsString(message.toTransfer());
+
+            // Para que se actualice 
+            actualizarFilaEliminar(request);
+
             messagingTemplate.convertAndSend("/topic/admin", json);
 
                 model.addAttribute("success", "Solicitud de eliminación de parking realizada con éxito.");
@@ -354,6 +359,26 @@ public class EnterpriseController {
         }
 
         return "redirect:/enterprise/requests";
+    }
+
+    private void actualizarFilaEliminar(Request request) {
+        try {
+        Message m = new Message();
+        Enterprise enterprise = request.getEnterprise();
+        m.setRecipient(null);
+        m.setSender(enterprise);
+        m.setDateSent(LocalDateTime.now());
+        m.setType(Type.ACTUALIZAR_REQUEST_ELIMINAR);
+        ObjectMapper mapper = new ObjectMapper();
+        // Únicamente queremso el estado de la request. También el id
+        m.setText(mapper.writeValueAsString(request.toTransfer()));
+        entityManager.persist(m);
+        entityManager.flush(); // to get Id before commit
+        String json = mapper.writeValueAsString(m.toTransfer());
+        messagingTemplate.convertAndSend("/topic/admin", json);
+        } catch (JsonProcessingException e) {
+            log.error("Error al enviar la notificación", e);
+        }
     }
 
     /**

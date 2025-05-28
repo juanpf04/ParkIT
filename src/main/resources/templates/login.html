@@ -11,6 +11,13 @@
 
     <main class="flex-shrink-0">
         <div class="container">
+        <div class="container-fluid row p-1">
+            <div th:if="${success}">
+                <div id="success-message" class="alert alert-success">
+                    <p th:text="${success}"></p>
+                </div>
+            </div>
+        </div>
             <form class="form-signin" method="post" th:action="@{/login}">
                 <h2 class="form-signin-heading">Please sign in</h2>
                 <p th:if="${loginError != false}" class="error">

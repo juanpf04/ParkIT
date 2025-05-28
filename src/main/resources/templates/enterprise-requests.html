@@ -34,7 +34,7 @@
                         th:data-bs-target="'#collapse-' + ${request.id}" aria-expanded="false"
                         th:aria-controls="'collapse-' + ${request.id}">
                         <p><span th:text="${request.name}">Nombre</span></p>
-                        <p>, Estado: <span th:text="${request.state}"
+                        <p>, Estado: <span th:id="'estado-' + ${request.id}"  th:text="${request.state}"
                                 th:class="${request.state == 'Pendiente' ? 'estado-pendiente' : request.state == 'Aceptada' ? 'estado-aceptado' : request.state == 'Rechazada' ? 'estado-rechazado' : ''}">
                                 Estado
                             </span></p>
@@ -70,7 +70,7 @@
                                         <p><strong>Precio/h:</strong> <span
                                                 th:text="${request.feePerHour}">Precio/h</span></p>
                                         <p><strong>Tipo:</strong> <span th:text="${request.type}">Tipo</span></p>
-                                        <p><strong>Estado de la petición:</strong> <span th:text="${request.state}"
+                                        <p><strong>Estado de la petición:</strong> <span th:id="'estado-interno-' + ${request.id}" th:text="${request.state}"
                                                 th:class="${request.state == 'Pendiente' ? 'estado-pendiente' : request.state == 'Aceptada' ? 'estado-aceptado' : request.state == 'Rechazada' ? 'estado-rechazado' : ''}">
                                                 Estado
                                             </span></p>

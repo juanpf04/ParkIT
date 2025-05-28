@@ -44,10 +44,12 @@ public class Message implements Transferable<Message.Transfer> {
 	private User sender;
 	@ManyToOne(optional = true)
 	private User recipient;
+
+	@Column(length=1000)
 	private String text;
 
 	public enum Type {
-        MOSTRAR, ACTUALIZAR
+        MOSTRAR, ACTUALIZAR, ACTUALIZAR_ESTADO_REQUEST, ACTUALIZAR_FILA_PARKING, ACTUALIZAR_REQUEST_ELIMINAR
     }
 
     @Enumerated(EnumType.STRING)

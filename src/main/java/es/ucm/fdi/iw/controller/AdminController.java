@@ -154,8 +154,12 @@ public class AdminController {
             request.setEnabled(false);
             request.setState("Aceptada");
             entityManager.persist(request);
+            entityManager.flush();
             Admin admin = (Admin) session.getAttribute("u");
             notificarEstadoParking(admin, p, request);
+            // Cuando aceptamos la petición también queremos que se actualice el estado
+            actualizarEstadoRequest(admin, request);
+            actualizarFilaParkingsEmpresa(admin, p);
 
             return ResponseEntity.ok("Parking añadido correctamente");
         } catch (Exception e) {
@@ -197,6 +201,47 @@ public class AdminController {
         }
     }
 
+
+    private void actualizarEstadoRequest(Admin admin, Request request) {
+        try {
+        Message m = new Message();
+        Enterprise enterprise = request.getEnterprise();
+        m.setRecipient(enterprise);
+        m.setSender(admin);
+        m.setDateSent(LocalDateTime.now());
+        m.setType(Type.ACTUALIZAR_ESTADO_REQUEST);
+        ObjectMapper mapper = new ObjectMapper();
+        // Únicamente queremso el estado de la request. También el id
+        m.setText(mapper.writeValueAsString(request.toTransfer()));
+        entityManager.persist(m);
+        entityManager.flush(); // to get Id before commit
+        String json = mapper.writeValueAsString(m.toTransfer());
+        messagingTemplate.convertAndSend("/enterprise/" + enterprise.getId() + "/queue/updates", json);
+        } catch (JsonProcessingException e) {
+            log.error("Error al enviar la notificación", e);
+        }
+    }
+
+    private void actualizarFilaParkingsEmpresa(Admin admin, Parking parking) {
+        try {
+        Message m = new Message();
+        Enterprise enterprise = parking.getEnterprise();
+        m.setRecipient(enterprise);
+        m.setSender(admin);
+        m.setDateSent(LocalDateTime.now());
+        m.setType(Type.ACTUALIZAR_FILA_PARKING);
+        ObjectMapper mapper = new ObjectMapper();
+        // Únicamente queremso el estado de la request. También el id
+        m.setText(mapper.writeValueAsString(parking.toTransfer()));
+        entityManager.persist(m);
+        entityManager.flush(); // to get Id before commit
+        String json = mapper.writeValueAsString(m.toTransfer());
+        messagingTemplate.convertAndSend("/enterprise/" + enterprise.getId() + "/queue/updates", json);
+        } catch (JsonProcessingException e) {
+            log.error("Error al enviar la notificación", e);
+        }
+    }
+
     /**
      * Elimina el parking al aceptar la solicitud de eliminar.
      *
@@ -231,6 +276,7 @@ public class AdminController {
             Admin admin = (Admin) session.getAttribute("u");
             notificarEstadoParking(admin, parking, request);
 
+
             return ResponseEntity.ok("Parking eliminado correctamente");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -260,8 +306,10 @@ public class AdminController {
             request.setEnabled(false);
             request.setState("Rechazada");
             entityManager.persist(request);
+            entityManager.flush();
             Admin admin = (Admin) session.getAttribute("u");
             notificarEliminarRequest(admin, request);
+            actualizarEstadoRequest(admin, request);
 
             return ResponseEntity.ok("Request eliminada correctamente");
         } catch (Exception e) {

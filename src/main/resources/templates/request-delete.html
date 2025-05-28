@@ -20,7 +20,7 @@
             </div>
 
             <div th:if="${not #lists.isEmpty(requests)}" class="accordion" id="parkingAccordion">
-                <div th:each="request : ${requests}" class="accordion-item">
+                <div th:each="request : ${requests}" class="accordion-item" th:id="'accordion-' + ${request.id}">
                     <h2 class="accordion-header" th:id="'heading-' + ${request.id}">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             th:data-bs-target="'#collapse-' + ${request.id}" aria-expanded="false"
