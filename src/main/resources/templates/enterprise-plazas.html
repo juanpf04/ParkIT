@@ -40,7 +40,12 @@
                     <td th:id=" 'state-' + ${spot.id}">No</td>
                     <td th:id="'reserves-' + ${spot.id}">
                             <ul class="mb-0" style="max-height: 100px; overflow-y: auto;">
-                                <li th:each="reserva : ${spot.reserves}" th:text="${reserva}"></li>
+                                <a th:href="@{/enterprise/reserve/{reservaId}(reservaId=${reserva.id})}" class="badge" th:each="reserva : ${spot.reserves}" 
+                                th:if="${reserva.state != null and reserva.state.name() == 'CONFIRMED' }"
+                                th:attr="id='reserve-' + ${reserva.id}"
+                                th:classappend="${reserva.state.name() == 'CONFIRMED' ? 'bg-secondary p-2 mb-1 rounded' : 'bg-danger'}"
+                                th:text="${reserva}">
+                                </a>
                             </ul>
                     </td>
                 </tr>

@@ -32,5 +32,36 @@
     <script th:src="@{/js/mapa-reserva.js}"></script>
 
 </th:block>
+<th:block th:fragment="ps-card-enterprise">
+    <div class="card mb-3 col col-12" style="max-width: 840px;">
+        <div class="row g-0">
+            <div class="col-md-4 mapa-reserva">
+                <div id="mapa"></div>
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${reserve.spot.parking.name}">Nombre del Parking </h5>
+                    <p class="card-text">
+                    <h6>Ubicacion</h6>
+                    <span>En <span class="text-decoration-underline"
+                            th:text="${reserve.spot.parking.address}"></span> en la ciudad de Madrid</span>
+                    <br><br>
+                    <h6>Detalles</h6>
+                    <p>Hora de apertura: <span th:text="${reserve.spot.parking.openingTime}"></span></p>
+                    <p>Hora de cierre: <span th:text="${reserve.spot.parking.closingTime}"></span></p>
+                    <p>Precio Hora: <span th:text="${reserve.spot.parking.feePerHour}"></span>€</p>
+                    <p>Telefono de contacto: <label type="phone" th:text="${reserve.spot.parking.telephone}"></label></p>
+                    <p>Correo de contacto: <label type="email" th:text="${reserve.spot.parking.email}"></label></p>
+                    <th:block th:replace="~{fragments/puntuaciones.html :: punt-form}"></th:block>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        var parking = /*[[${parking}]]*/{};
+    </script>
+    <script th:src="@{/js/mapa-reserva.js}"></script>
 
+</th:block>
 </html>

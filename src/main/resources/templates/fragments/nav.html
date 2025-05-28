@@ -89,7 +89,7 @@
                             <li class="nav-link ">
                                 <a class="nav-link" th:if="${u.hasRole('ENTERPRISE')}"
                                     th:href="@{/enterprise/{id}(id=${u.id})}">
-                                    <img class="iwthumb rounded" th:src="@{/user/{id}/pic(id=${u.id})}">
+                                    <img class="iwthumb rounded" th:src="@{/enterprise/{id}/pic(id=${u.id})}">
                                     <span th:text="${u.username}">Pepe</span>
                                 </a>
                                 <a class="nav-link" th:if="${u.hasRole('USER')}" th:href="@{/user/{id}(id=${u.id})}">
@@ -205,7 +205,7 @@
                         <li class="nav-link btn pt-1">
                             <a class="nav-link" th:if="${u.hasRole('ENTERPRISE')}"
                                 th:href="@{/enterprise/{id}(id=${u.id})}">
-                                <img class="iwthumb rounded" th:src="@{/user/{id}/pic(id=${u.id})}">
+                                <img class="iwthumb rounded" th:src="@{/enterprise/{id}/pic(id=${u.id})}">
                                 <span th:text="${u.username}">Pepe</span>
                             </a>
                             <a class="nav-link" th:if="${u.hasRole('USER')}" th:href="@{/user/{id}(id=${u.id})}">

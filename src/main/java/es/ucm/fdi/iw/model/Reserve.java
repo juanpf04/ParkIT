@@ -97,6 +97,6 @@ public class Reserve implements Transferable<Reserve.Transfer> {
 
     @Override
     public String toString() {
-        return startDate + " " + startTime + " - " + endDate + " " + endTime;
+        return "Fecha Inicio: " +startDate + "(" + startTime + "h). Fecha final: " + endDate + "(" + endTime +"h)";
     }
 }

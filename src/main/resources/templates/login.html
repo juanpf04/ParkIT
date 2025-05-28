@@ -11,6 +11,11 @@
 
     <main class="flex-shrink-0">
         <div class="container">
+            <div th:if="${success}">
+                <div class="alert alert-success">
+                    <span>¡Registro exitoso! Ahora puedes iniciar sesión.</span>
+                </div>
+            </div>
             <form class="form-signin" method="post" th:action="@{/login}">
                 <h2 class="form-signin-heading">Please sign in</h2>
                 <p th:if="${loginError != false}" class="error">
@@ -18,17 +23,41 @@
                 </p>
                 <p>
                     <label for="username" class="visually-hidden">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Username" required="required">
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Username"
+                        required="required">
                 </p>
                 <p>
                     <label for="password" class="visually-hidden">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required="required">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Password"
+                        required="required">
                 </p>
                 <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
             </form>
         </div>
     </main>
-
+    <div class="toast-container position-fixed  end-0 p-3">
+        <div id="registerSuccessToast" class="toast align-items-center text-bg-success border-0" role="alert"
+            aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ¡Registro exitoso! Ya puedes iniciar sesión.
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Cerrar"></button>
+            </div>
+        </div>
+    </div>
+<!-- <p>Valor de success: [[${success}]]</p> -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        const showToast = '[[${success}]]';
+        if (showToast === 'true') {
+            const toastEl = document.getElementById('registerSuccessToast');
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+        });
+    </script>
     <th:block th:replace="~{fragments/footer.html :: footer}" />
 </body>
 

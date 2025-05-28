@@ -1,11 +1,12 @@
 <div th:fragment="register-parker-form">
-    <form action="registerParker" class="contenido-formulario active needs-validation" novalidate>
+    <form id="registerFormParker" th:action="@{/registerUser}" method="post" class="form-section active needs-validation" novalidate>
         <h4 class="text-center mb-3">Registro Parker</h4>
+        <input type="hidden" name="rol" value="PARKER">
         <div class="mb-3">
             <label for="parkerUserName" class="form-label">Nombre de Usuario</label>
             <input type="text" class="form-control" id="parkerUserName" name="parkerUserName" minlength="4" required>
             <div class="invalid-feedback">
-                El nombre de usuario debe tener el formato 12345678A.
+                El nombre de usuario debe tener al menos 4 caracteres.
             </div>
         </div>
         <div class="mb-3">
@@ -13,12 +14,14 @@
             <input type="text" class="form-control" id="parkerName" name="parkerName" minlength="4" required>
             <div class="invalid-feedback">
                 El nombre debe tener al menos 4 caracteres.
+            </div>
         </div>
         <div class="mb-3">
             <label for="parkerSecondName" class="form-label">Apellido</label>
             <input type="text" class="form-control" id="parkerSecondName" name="parkerSecondName" minlength="4" required>
             <div class="invalid-feedback">
                 El apellido debe tener al menos 4 caracteres.
+                </div>
         </div>
         <div class="mb-3">
             <label for="parkerDNI" class="form-label">DNI</label>
@@ -60,13 +63,14 @@
 </div>
 
 <div th:fragment="register-enterprise-form">
-    <form action="registerEnterprise" class="contenido-formulario active needs-validation" novalidate>
+    <form id="registerFormEnterprise" th:action="@{/registerUser}" method="post" class="form-section needs-validation" novalidate>
         <h4 class="text-center mb-3">Registro Empresa</h4>
+        <input type="hidden" name="rol" value="ENTERPRISE">
         <div class="mb-3">
             <label for="enterpriseUserName" class="form-label">Nombre de Usuario</label>
             <input type="text" class="form-control" id="enterpriseUserName" name="enterpriseUserName" minlength="4" required>
             <div class="invalid-feedback">
-                El nombre de usuario debe tener el formato 12345678A.
+                El nombre de usuario debe tener al menos 4 caracteres.
             </div>
         </div>
         <div class="mb-3">
@@ -74,6 +78,7 @@
             <input type="text" class="form-control" id="enterpriseName" name="enterpriseName" minlength="4" required>
             <div class="invalid-feedback">
                 El nombre debe tener al menos 4 caracteres.
+            </div>
         </div>
         <div class="mb-3">
             <label for="enterpriseCIF" class="form-label">CIF</label>
@@ -110,6 +115,6 @@
                 Las contraseñas no coinciden.
             </div>
         </div>
-        <button type="submit" class="btn btn-primary w-100 mt-3">Registrarse</button>
+        <button type="submit" class="btn btn-success w-100 mt-3">Registrarse</button>
     </form>
 </div>

@@ -9,19 +9,22 @@
 <body class="d-flex flex-column h-100">
     <header th:replace="~{fragments/nav.html :: nav}"></header>
 
-    <div class="form-register">
+    <div class="form-container" id="formRegister">
         <!-- deslizador para cambiar el formulario de registro -->
          <div class="toggle-label">
-             <div class="form-check form-switch">
-                <input type="check-box" class="form-check-input">
-                <label for="userTypeSwitch" class="form-check-label">
-                    <span class="switchUserLabel"><strong>Registro Usuario</strong></span>
-                </label>
-            </div>
+           <div class="form-check form-switch">
+             <input class="form-check-input" type="checkbox" id="userTypeSwitch">
+             <label class="form-check-label" for="userTypeSwitch">
+               <span id="switchLabel"><strong>Cambiar Rol</strong></span>
+             </label>
+           </div>
          </div>
-         <th:block th:replace="~{fragments/register-forms.html :: register-parker-form}"></th:block>
-         <th:block th:replace="~{fragments/register-forms.html :: register-enterprise-form}"></th:block>
     </div>
+    <div class="form-container">
+        <th:block th:replace="~{fragments/register-forms.html :: register-parker-form}"></th:block>
+        <th:block th:replace="~{fragments/register-forms.html :: register-enterprise-form}"></th:block>
+    </div>
+    <script th:src="@{/js/register.js}" src="js/register.js"></script>
     <th:block th:replace="~{fragments/footer.html :: footer}" />
 </body>
 

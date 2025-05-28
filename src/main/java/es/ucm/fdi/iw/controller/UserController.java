@@ -467,7 +467,7 @@ public class UserController {
 		reserve.setStartTime(startTime);
 		reserve.setEndTime(endTime);
 		reserve.setPrice(totalPrice);
-		reserve.setState(Reserve.State.PENDING);
+		reserve.setState(Reserve.State.CONFIRMED);
 		reserve.setSpot(spot);
 		reserve.setVehicle(vehicle);
 
@@ -497,8 +497,22 @@ public class UserController {
 	 * @param model Modelo para la vista.
 	 * @return Nombre de la vista "modify-reserve".
 	 */
-	@GetMapping("/modify-reserve")
-	public String modifyReserve(Model model) {
+	@GetMapping("/reserve/{id}/modify")
+	public String modifyReserve(Model model,
+			@PathVariable long id) {
+		Reserve reserve = entityManager.find(Reserve.class, id);
+		if (reserve == null) {
+			model.addAttribute("error", "Reserva no válida");
+			return "error";
+		}
+		Parker parker = (Parker) model.getAttribute("u");
+		Parker user = entityManager.find(Parker.class, parker.getId());
+		if(user ==null || !user.getVehicles().contains(reserve.getVehicle())){
+			model.addAttribute("error", "No tienes permiso para modificar esta reserva");
+			return "error";
+		}
+		model.addAttribute("parking", reserve.getSpot().getParking().toTransfer());
+		model.addAttribute("reserve", reserve);
 		return "modify-reserve";
 	}
 
@@ -545,7 +559,7 @@ public class UserController {
 	 * @return Nombre de la vista "my-reserves" o "error" si la reserva no es
 	 *         válida.
 	 */
-	@PostMapping("/cancel-reserve/{id}")
+	@PostMapping("/reserve/{id}/cancel")
 	@Transactional
 	public String cancelReserve(@PathVariable long id, Model model) {
 		Reserve reserve = entityManager.find(Reserve.class, id);
@@ -589,18 +603,17 @@ public class UserController {
 	 *                                 JSON.
 	 */
 	private void notificarCancelacionReserva(User user, Reserve reserve, Enterprise enterprise) {
-		Message m = new Message();
-		m.setRecipient(enterprise);
-		m.setSender(user);
-		m.setDateSent(LocalDateTime.now());
-		m.setText("El usuario " + user.getUsername() + "ha cancelado una reserva en "
-				+ reserve.getSpot().getParking().getName() + " desde "
-				+ reserve.getStartDate() + " a " + reserve.getEndDate() + " de " + reserve.getStartTime() + " a "
-				+ reserve.getEndTime());
-		entityManager.persist(m);
-		entityManager.flush(); // to get Id before commit
-		ObjectMapper mapper = new ObjectMapper();
 		try {
+			Message m = new Message();
+			m.setRecipient(enterprise);
+			m.setSender(user);
+			m.setDateSent(LocalDateTime.now());
+			ObjectMapper mapper = new ObjectMapper();
+			String reserveJson = mapper.writeValueAsString(reserve.toTransfer());
+			m.setText(reserveJson);
+			m.setType(Type.ACTUALIZAR);
+			entityManager.persist(m);
+			entityManager.flush(); // to get Id before commit
 			String json = mapper.writeValueAsString(m.toTransfer());
 			messagingTemplate.convertAndSend("/enterprise/" + enterprise.getId() + "/queue/updates", json);
 		} catch (JsonProcessingException e) {
@@ -797,29 +810,6 @@ public class UserController {
 		return "{\"status\":\"photo uploaded correctly\"}";
 	}
 
-	/**
-	 * Actualiza la imagen de perfil de un usuario.
-	 *
-	 * @param id   ID del usuario.
-	 * @param file Archivo de la imagen.
-	 * @return Mapa con la URL de la nueva imagen.
-	 * @throws RuntimeException Si ocurre un error al guardar la imagen.
-	 */
-	@PostMapping("/user/{id}/pic")
-	@ResponseBody
-	public Map<String, String> updateProfilePic(@PathVariable long id, @RequestParam("file") MultipartFile file) {
-		// Guarda la imagen en el servidor
-		File f = localData.getFile("user", id + ".jpg");
-		try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(f))) {
-			stream.write(file.getBytes());
-		} catch (IOException e) {
-			throw new RuntimeException("Error al guardar la imagen", e);
-		}
-
-		// Devuelve la URL de la nueva imagen
-		String newPicUrl = "/user/" + id + "/pic";
-		return Map.of("newPicUrl", newPicUrl);
-	}
 
 	/**
 	 * Muestra una página de error genérica.
@@ -880,22 +870,23 @@ public class UserController {
      * @return Respuesta JSON con el estado del envío.
      * @throws JsonProcessingException Si ocurre un error al serializar el mensaje.
      */
-	@PostMapping("/{id}/msg")
+	@PostMapping("/{reserveId}/msg")
 	@ResponseBody
 	@Transactional
-	public String postMsg(@PathVariable long id,
+	public String postMsg(@PathVariable long reserveId,
 			@RequestBody JsonNode o, Model model, HttpSession session)
 			throws JsonProcessingException {
 
 		String text = o.get("message").asText();
-		User u = entityManager.find(User.class, id);
+		Reserve reserve = entityManager.find(Reserve.class, reserveId);
+		User receiver = entityManager.find(User.class, reserve.getSpot().getParking().getEnterprise().getId());
 		User sender = entityManager.find(
 				User.class, ((User) session.getAttribute("u")).getId());
-		model.addAttribute("user", u);
+		// model.addAttribute("user", u);
 
 		// construye mensaje, lo guarda en BD
 		Message m = new Message();
-		m.setRecipient(u);
+		m.setRecipient(receiver);
 		m.setSender(sender);
 		m.setDateSent(LocalDateTime.now());
 		m.setText(text);
@@ -917,9 +908,9 @@ public class UserController {
 		// persiste objeto a json usando Jackson
 		String json = mapper.writeValueAsString(m.toTransfer());
 
-		log.info("Sending a message to {} with contents '{}'", id, json);
+		log.info("Sending a message to {} with contents '{}'", reserveId, json);
 
-		messagingTemplate.convertAndSend("/user/" + u.getUsername() + "/queue/updates", json);
+		messagingTemplate.convertAndSend("/enterprise/reserva/" + reserveId , json);
 		return "{\"result\": \"message sent.\"}";
 	}
 

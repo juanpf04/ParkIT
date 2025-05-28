@@ -79,6 +79,16 @@ if (ws.receive) {
             console.log(m.text);
             //Ejemplo de cómo convertir a JSON
             let reservaJSON = JSON.parse(m.text);
+            if(reservaJSON.state === "CANCELLED") {
+                const reservaLi = document.getElementById('reserve-' + reservaJSON.id);
+                if (reservaLi) {
+                    reservaLi.classList.remove('bg-primary');
+                    reservaLi.classList.add('bg-danger');
+                    setTimeout(() => {
+                        reservaLi.remove(); // Elimina la reserva cancelada
+                    },5000);
+                }
+            }else{
             let spotId = reservaJSON.spotId;
             console.log(spotId);
 
@@ -86,8 +96,11 @@ if (ws.receive) {
             let ul = reservasTd.querySelector("ul");
 
             const reserva = document.createElement('li');
-            reserva.textContent = reservaJSON.startDate + " " + reservaJSON.startTime + " - " + reservaJSON.endDate + " " + reservaJSON.endTime;
+            reserva.classList.add( 'bg-success');
+            reserva.classList.add('badge');
+            reserva.textContent = "NEW Fechas:"+ reservaJSON.startDate + " a " + reservaJSON.startTime + " Horas: " + reservaJSON.endDate + " a " + reservaJSON.endTime;
             ul.appendChild(reserva);
+            }
         }
     }
 }

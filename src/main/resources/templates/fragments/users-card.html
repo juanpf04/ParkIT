@@ -11,7 +11,8 @@
     <div class="card-body p-5">
       <div class="row align-items-center gx-5">
         <div class="col text-center text-lg-start mb-4 mb-lg-0 text-center">
-          <img class="img-thumbnail" id="profilePic" th:src="@{/user/{id}/pic(id=${u.id})}">
+          <img th:if="${u.hasRole('USER')}" class="img-thumbnail" id="profilePic" th:src="@{/user/{id}/pic(id=${u.id})}">
+          <img th:if="${u.hasRole('ENTERPRISE')}" class="img-thumbnail" id="profilePic" th:src="@{/enterprise/{id}/pic(id=${u.id})}">
         </div>
         <div class="bg-light p-4 rounded-4">
           <div class="text-primary fw-bolder mb-2"><span th:text="${user.username}"> Nombre de usuario
@@ -32,8 +33,20 @@
         </div>
       </div>
 
-      <div id="profile" class="mb-3 mt-4">
+      <div th:if="${u.hasRole('USER')}" id="profile" class="mb-3 mt-4">
         <form id="avatarform" th:action="@{/user/{id}/pic(id=${user.id})}" method="post" enctype="multipart/form-data">
+          <div class="mb-3">
+            <input type="file" id="f_avatar" name="photo" class="form-control" accept="image/jpeg,image/png">
+          </div>
+          <div class="mb-3">
+            <img class="preview w-100 h-100" id="avatar" />
+          </div>
+          <button id="postAvatar" class="perfilable btn btn-outline-dark w-100" type="submit">Usar como foto de
+            perfil</button>
+        </form>
+      </div>
+      <div th:if="${u.hasRole('ENTERPRISE')}"id="profile" class="mb-3 mt-4">
+        <form id="avatarform" th:action="@{/enterprise/{id}/pic(id=${user.id})}" method="post" enctype="multipart/form-data">
           <div class="mb-3">
             <input type="file" id="f_avatar" name="photo" class="form-control" accept="image/jpeg,image/png">
           </div>

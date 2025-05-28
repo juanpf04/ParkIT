@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cancelButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             const reservaId = btn.getAttribute('data-id');
-            const action = `/user/cancel-reserve/${reservaId}`;
+            const action = `/user/reserve/${reservaId}/cancel`;
             form.setAttribute('action', action);
         });
     });

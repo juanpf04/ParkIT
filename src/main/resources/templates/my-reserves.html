@@ -40,27 +40,27 @@
             </thead>
             <tbody>
                 <tr th:each="r : ${reservas}">
-                    <td id="fila1"><a class="nav-link" th:href="@{/user/modify-reserve}" href="/user/modify-reserve"
+                    <td id="fila1"><a class="nav-link" th:href="@{/user/reserve/{id}/modify(id=${r.id})}" href="/user/modify-reserve"
                             th:text="${r.spot.parking.address}">Ubicacion</a></td>
-                    <td id="fila1"><a class="nav-link" th:href="@{/user/modify-reserve}" href="/user/modify-reserve"
+                    <td id="fila1"><a class="nav-link" th:href="@{/user/reserve/{id}/modify(id=${r.id})}" href="/user/modify-reserve"
                             th:text="${r.spot.id}">Nº Plaza</a></td>
-                    <td id="fila1"><a class="nav-link" th:href="@{/user/modify-reserve}" href="/user/modify-reserve"
+                    <td id="fila1"><a class="nav-link" th:href="@{/user/reserve/{id}/modify(id=${r.id})}" href="/user/modify-reserve"
                             th:text="${r.vehicle.plate}">Vehículo</a></td>
-                    <td id="fila1"><a class="nav-link" th:href="@{/user/modify-reserve}" href="/user/modify-reserve"
+                    <td id="fila1"><a class="nav-link" th:href="@{/user/reserve/{id}/modify(id=${r.id})}" href="/user/modify-reserve"
                             th:text="${r.startDate}">Fecha Inicio</a></td>
-                    <td id="fila1"><a class="nav-link" th:href="@{/user/modify-reserve}" href="/user/modify-reserve"
+                    <td id="fila1"><a class="nav-link" th:href="@{/user/reserve/{id}/modify(id=${r.id})}" href="/user/modify-reserve"
                             th:text="${r.endDate}">Fecha Final</a></td>
-                    <td id="fila1"><a class="nav-link" th:href="@{/user/modify-reserve}" href="/user/modify-reserve"
+                    <td id="fila1"><a class="nav-link" th:href="@{/user/reserve/{id}/modify(id=${r.id})}" href="/user/modify-reserve"
                             th:text="${r.startTime}">Hora Inicio</a></td>
-                    <td id="fila1"><a class="nav-link" th:href="@{/user/modify-reserve}" href="/user/modify-reserve"
+                    <td id="fila1"><a class="nav-link" th:href="@{/user/reserve/{id}/modify(id=${r.id})}" href="/user/modify-reserve"
                             th:text="${r.endTime}">Hora Final</a></td>
-                    <td id="fila1"><a class="nav-link" th:href="@{/user/modify-reserve}" href="/user/modify-reserve"
+                    <td id="fila1"><a class="nav-link" th:href="@{/user/reserve/{id}/modify(id=${r.id})}" href="/user/modify-reserve"
                             th:text="${r.price}">Precio</a></td>
-                    <td id="fila1"><a class="nav-link" th:href="@{/user/modify-reserve}" href="/user/modify-reserve"
+                    <td id="fila1"><a class="nav-link" th:href="@{/user/reserve/{id}/modify(id=${r.id})}" href="/user/modify-reserve"
                             th:text="${r.state}">Estado</a></td>
-                    <td id="fila1"><a class="btn btn-primary m-1" th:href="@{/user/modify-reserve}"
-                            href="/user/modify-reserve">Modificar</a>
-                        <a class="btn btn-danger m-1" data-bs-toggle="modal" data-bs-target="#confirmCancelModal"
+                    <td th:if="${r.state.name() == 'CONFIRMED'}" id="fila1">
+                        <a class="btn btn-primary m-1" th:href="@{/user/reserve/{id}/modify(id=${r.id})}">Modificar</a>
+                        <a th:if="${r.state.name() == 'CONFIRMED'}" class="btn btn-danger m-1" data-bs-toggle="modal" data-bs-target="#confirmCancelModal"
                             th:attr="data-id=${r.id}">
                             Cancelar
                         </a>
@@ -75,7 +75,7 @@
     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="cancelForm" th:action="@{/user/cancel-reserve/__ID__}" method="post">
+            <form id="cancelForm" th:action="@{/user/reserve/cancel/}" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title" id="confirmCancelModalLabel">Confirmar Cancelación</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>

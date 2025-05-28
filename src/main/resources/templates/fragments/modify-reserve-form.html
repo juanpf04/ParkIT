@@ -1,59 +1,112 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <th:block th:fragment="modify-reserve-form">
-        <div class="col mx-3">
-            <form action="/confirm-reserve" method="post">
-                <div class="row">
-                    <div class="col-md-6">
-                        <label for="ini-f" class="form-label">Fecha inicio</label>
-                        <input type="date" class="form-control" id="ini-f" value="" required />
-                    </div>
-                    <div class="col-md-6">
-                        <label for="fin-f" class="form-label">Fecha final</label>
-                        <input type="date" class="form-control" id="fecha-f" value="" required />
-                    </div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-md-6">
-                        <label for="ini-h" class="form-label">Hora inicio</label>
-                        <input type="time" class="form-control" id="ini-h" value="" required />
-                    </div>
-                    <div class="col-md-6">
-                        <label for="fin-h" class="form-label">Hora final</label>
-                        <input type="time" class="form-control" id="fin-h" value="" required />
-                    </div>
-                </div>
-                <br>
-                <div class="row">
-                        <label for="vehiculo">Vehículo</label>
-                        <select
-                            class="form-select form-select-lg "
-                            name=""
-                            id=""
-                        >
-                            <option selected>Selecciona 1</option>
-                            <option value="">Coche 1</option>
-                            <option value="">Coche 2</option>
-                            <option value="">Coche 3</option> 
-                        </select>
-                        <div class="container text-center">
-                            <div th:replace="~{/fragments/new-car-modal.html :: new-car-modal}" ></div>
-                        </div>
+<th:block th:fragment="modify-reserve-form">
+    <div class="col mx-3">
+        <div class="row justify-content-center mb-3">
+            <div class="card">
+                <div class="card-header row">
+                    <div class="col flex-nowrap">
                         
-                </div>
-                <div class="row pt-1 m-1">
+                        <h3 th:text="'Modificar Reserva: ' + ${reserve.id}"></h3>
+                        <li class="col col-sm-2 col-lg-3 badge bg-success"th:text="${reserve.state.name()}">Estado</li>
+                    </div>
                     
-                    <h4>Precio total:</h4>
-                    <p>0.00€</p>
+                    <a th:href="@{/user/reserve/{id}/cancelar}" class="btn btn-danger m-1 col-sm-2 col-lg-2">Eliminar Reserva</a>
                 </div>
-                <div class="row justify-content-center pt-5">
-                    <!-- <button class="btn btn-danger m-1 col col-lg-3">Cancelar</button> -->
-                    <a href="/user/my-reserves"class="btn btn-secondary m-1 col col-lg-3">Cancelar</a>
-                    <button class="btn btn-primary m-1 col col-lg-3">Modificar</button>
-                    <button class="btn btn-danger m-1 col col-lg-3">Eliminar</button>
+                <div class="card-body row">
+                    <input type="hidden" id="reservaId" th:value="${reserve.id}" >
+<button id="abrirChatBtn" class="btn btn-dark" style="height: 70px;  position: fixed; bottom: 0px; right: 0px;">
+    💬 Abrir Chat
+</button>                    <div class="col col-lg-6">
+                        <p>Fecha de reserva: <span th:text="${reserve.startDate}"></span></p>
+                        <p>Hora de reserva: <span th:text="${reserve.startTime}"></span></p>
+                        <p>Plaza reservada: <span th:text="${reserve.spot.id}"></span></p>
+                        <p>Precio total: <span th:text="${reserve.price}"></span>€</p>
+                        
+                    </div>
+                    <div class="col col-lg-6">
+                        
+                        <p>Fecha de finalización: <span th:text="${reserve.endDate}"></span></p>
+                        <p>Hora de finalización: <span th:text="${reserve.endTime}"></span></p>
+                        <p>Vehículo: <span th:text="${reserve.vehicle.brand} + ' ' + ${reserve.vehicle.model} + ' (' + ${reserve.vehicle.plate} + ')'"></span></p>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
-    </th:block>
+        <form method="post" th:action="@{/user/confirm-reserve}">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="ini-f" class="form-label">Fecha inicio</label>
+                    <input type="date" class="form-control" id="ini-f" name="startDate" th:value="${reserve.startDate}"
+                        required />
+                </div>
+                <div class="col-md-6">
+                    <label for="fin-f" class="form-label">Fecha final</label>
+                    <input type="date" class="form-control" id="fin-f" name="endDate" th:value="${reserve.endDate}" required />
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="ini-h" class="form-label">Hora inicio</label>
+                    <input type="time" class="form-control" id="ini-h" name="startTime" th:value="${reserve.startTime}"
+                        required />
+                </div>
+                <div class="col-md-6">
+                    <label for="fin-h" class="form-label">Hora final</label>
+                    <input type="time" class="form-control" id="fin-h" name="endTime" th:value="${reserve.endTime}" required />
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <label for="vehiculo">Vehículo</label>
+                <select class="form-select form-select-lg" name="vehicleId" id="vehicleId" required>
+                    <option th:if="${vehicleId == null}" value="" selected disabled>Selecciona 1</option>
+                    <option th:each="vehicle : ${vehicles}" th:value="${vehicle.id}" th:if="${vehicleId != null} and vehicleId == ${vehicle.id}"
+                        th:text="${vehicle.brand}+' '+${vehicle.model}+' ('+${vehicle.plate}+')'" selected></option>
+                    <option th:each="vehicle : ${vehicles}" th:value="${vehicle.id}"
+                        th:text="${vehicle.brand}+' '+${vehicle.model}+' ('+${vehicle.plate}+')'"></option>
+                </select>
+                <div class="container text-center">
+                    <div th:replace="~{fragments/new-car-modal.html :: new-car-modal}" ></div>
+                </div>
+
+            </div>
+            <div class="row pt-1 m-1">
+                <p id="errorMsg"></p>
+                <h4>Diferencia a pagar/devolver:</h4>
+                <p><span id="totalPrecio">0.00</span>€</p>
+                <input type="hidden" name="totalPrice" id="totalPrice" value="0.00" />
+
+            </div>
+
+
+
+            <div class="row text-center mt-3">
+                <div th:if="${selectedSlot != null}" class="fw-bold text-success">
+                    <p>Plaza seleccionada: <span th:text="${selectedSlot}"></span></p>
+
+                    <button id="cambiar-plaza" class="btn btn-info" type="button">Cambiar Plaza</button>
+                </div>
+            
+                <div th:if="${selectedSlot == null}">
+
+                    <button id="seleccionar-plaza" class="btn btn-info" type="button">Seleccionar Plaza</button>
+                </div>
+            </div>
+            
+            
+
+            <div class="row justify-content-center pt-5">
+                <a  th:href="@{/user/my-reserves}" class="btn btn-secondary m-1 col col-lg-3">Cancelar</a>
+                <div id="errorNotification" class="alert alert-danger d-none" role="alert"></div>
+                <input type="hidden" id="parkingId" name="parkingId" th:value="${parking.id}" />
+                <input type="hidden" name="selectedParkingSpot" id="selectedParkingSpot" th:value="${selectedSlot}" />
+                <button id="reservarFormulario" class="btn btn-primary m-1 col col-lg-3" type="submit">Modificar</button>
+            </div>
+        </form>
+    </div>
+    <script th:src="@{/js/mapa-reserva.js}"></script>
+</th:block>
+
 </html>

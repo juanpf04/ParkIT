@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/head.html :: header}" />
+    <title>Reservar Plaza</title>
+    <th:block th:replace="~{fragments/leaflet.html :: head}" />
+</head>
+
+<div class="d-flex flex-column h-100">
+    <header th:replace="~{fragments/nav.html :: nav}"></header>
+    <div class="container-fluid row p-5">
+        <div th:replace="~{fragments/parking-space-card.html :: ps-card-enterprise}"></div>
+        <div class="col mx-3">
+            <div class="row justify-content-center mb-3">
+                <div class="card">
+                    <div class="card-header row">
+                        <div class="col flex-nowrap">
+
+                            <h3 th:text="'Datos Reserva: ' + ${reserve.id}"></h3>
+                            <li class="col col-sm-2 col-lg-3 badge bg-success" th:text="${reserve.state.name()}">Estado
+                            </li>
+                        </div>
+
+                    </div>
+                    <div class="card-body row">
+                        <input type="hidden" id="reservaId" th:value="${reserve.id}">
+                        <div class="col col-lg-6">
+                            <p>Fecha de reserva: <span th:text="${reserve.startDate}"></span></p>
+                            <p>Hora de reserva: <span th:text="${reserve.startTime}"></span></p>
+                            <p>Plaza reservada: <span th:text="${reserve.spot.id}"></span></p>
+                            <p>Precio total: <span th:text="${reserve.price}"></span>€</p>
+
+                        </div>
+                        <div class="col col-lg-6">
+
+                            <p>Fecha de finalización: <span th:text="${reserve.endDate}"></span></p>
+                            <p>Hora de finalización: <span th:text="${reserve.endTime}"></span></p>
+                            <p>Vehículo: <span
+                                    th:text="${reserve.vehicle.brand} + ' ' + ${reserve.vehicle.model} + ' (' + ${reserve.vehicle.plate} + ')'"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div th:replace="~{fragments/reserve-form.html :: reserve-form}"></div> -->
+        </div>
+        <button id="abrirChatBtn" class="btn btn-dark" >💬 Abrir Chat</button>      
+    </div>
+</div>
+</div>
+<div id="chatContainer" class="card shadow" style="
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 300px;
+    max-height: 400px;
+    display: none;
+    z-index: 1060;">
+    
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <span>Chat con la empresa</span>
+        <button id="cerrarChatBtn" class="btn btn-sm btn-light">&times;</button>
+    </div>
+
+    <div class="card-body" id="chatMessages" style="overflow-y: auto; height: 250px;"></div>
+
+    <div class="card-footer p-2">
+        <div class="input-group">
+            <input type="text" id="chatInput" class="form-control" placeholder="Escribe..." />
+            <button id="sendChatBtn" class="btn btn-primary">➤</button>
+        </div>
+    </div>
+</div>
+<footer th:replace="~{fragments/footer.html :: footer}"></footer>
+ <script th:src="@{/js/chat-reserve-enterprise.js}" src="js/chat-reserve-enterprise.js"></script>
+</body>
+
+</html>
