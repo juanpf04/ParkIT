@@ -14,11 +14,11 @@
           <img class="img-thumbnail" id="profilePic" th:src="@{/user/{id}/pic(id=${u.id})}">
         </div>
         <div class="bg-light p-4 rounded-4">
-          <div class="text-primary fw-bolder mb-2"><span th:text="${user.username}"> Nombre de usuario
+          <div class="text-primary fw-bolder mb-2"><span th:text="${user.username}" id="usuarioPerfilUsuario"> Nombre de usuario
               empresa/usuario</span></div>
           <div th:if="${u.hasRole('ENTERPRISE')}" class="small fw-bolder"><span th:text="${user.name}"> Nombre
               empresa</span></div>
-          <div class="small fw-bolder"><span th:text="${user.email}"> Correo de la empresa/usuario</span></div>
+          <div class="small fw-bolder"><span th:text="${user.email}" id="correoPerfilUsuario"> Correo de la empresa/usuario</span></div>
           <div th:if="${u.hasRole('USER')}" class="small fw-bolder"><span th:text="${user.firstName}"> Nombre del
               usuario</span>
             <span th:text="${user.secondName}"> Apellido del usuario</span>
@@ -42,7 +42,7 @@
             perfil</button>
         </form>
       </div>
-
+      <script th:src="@{/js/cambiosPerfilUser.js}"></script>
       <script>//revisa esto
         document.querySelector("#f_avatar").onchange = e => {
           let img = document.querySelector("#avatar");

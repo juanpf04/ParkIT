@@ -21,7 +21,7 @@
       <div class="card-body p-4">
         <h4 class="text-center">Datos personales</h4>
 
-        <form action="post">
+        <!-- Formulario que no llama en ningún momento al control -->
           <div class="mb-3">
             <label for="usuario" class="mb-2">Usuario</label>
             <input type="text" th:value="${u.username}" class="form-control" name="usuario" id="usuario"
@@ -30,30 +30,39 @@
 
           <div class="mb-3">
             <label for="telefono" class="mb-2">Telefono</label>
-            <input type="text" th:value="telefono" class="form-control" name="telefono" id="telefono"
+            <input type="text" th:value="${u.telephone}" class="form-control" name="telefono" id="telefono"
               aria-describedby="telefonoId" placeholder="" disabled>
           </div>
 
           <div class="mb-3">
             <label for="correo" class="mb-2">Correo</label>
-            <input type="text" th:value="correo" class="form-control" name="correo" id="correo"
+            <input type="text" th:value="${u.email}" class="form-control" name="correo" id="correo"
               aria-describedby="usuarioId" placeholder="" disabled>
           </div>
 
+          <input type="hidden" id="usuarioId" th:value="${u.id}">
+
           <div class="row mb-3">
             <div class="col">
-              <button type="button" class="btn btn-outline-dark w-100">Editar datos</button>
+              <button type="button" id="btn-editar" class="btn btn-outline-dark w-100">Editar datos</button>
             </div>
             <div class="col">
-              <button class="btn btn-outline-dark w-100" type="submit" disabled>Guardar</button>
+              <button class="btn btn-outline-dark w-100" id="btn-submit" type="submit" disabled>Guardar</button>
             </div>
           </div>
-        </form>
 
         <div class="row mb-3">
             <div class="col">
               <button class="btn btn-outline-dark w-100" type="button" data-bs-toggle="modal" data-bs-target="#modalSaldo">Cargar Saldo</button>
             </div>
+        </div>
+
+        <!-- d-none es el display none. No se muestra así de primeras -->
+        <div class="alert alert-success d-none" id="success">
+
+        </div>
+        <div class="alert alert-danger d-none" id="error">
+
         </div>
       </div>
     </div>
@@ -83,45 +92,11 @@
   </div>
 </div>
 
-
-  <!-- <main class="flex-shrink-0">
-    <div id="books" class="border border-2 border-primary rounded">
-      <label for="isbn">ISBN</label><input id="isbn" value="9780140328721" />
-
-  <button id="fetchBook">Buscar datos online</button>
-  <img class="preview" id="portada" alt="portada del libro" />
-  <form th:action="@{/user/__${user.id}__/pic}">
-    <button id="postPortada" class="perfilable">Usar como foto de perfil</button>
-  </form>
-  </div>
-  <div id="movies" class="border border-2 border-secondary rounded">
-    <label for="imdb">IMDB</label><input id="imdb" value="tt11286314" />
-    <button id="fetchMovie">Buscar datos online</button>
-    <img class="preview" id="poster" alt="poster de la pelicula" />
-    <form th:action="@{/user/__${user.id}__/pic}">
-      <button id="postPoster" class="perfilable">Usar como foto de perfil</button>
-    </form>
-  </div>
-
-
-  <div class="container">
-    <h1 class="mt-5">Perfil de <span th:text="${user.username}">Paco</span></h1>
-    recepción de mensajes
-    <div class="py-5 row" id="mensajes">
-    </div>
-    envío de mensajes
-    <div class="py-5 row">
-      <form th:action="@{/user/__${user.id}__/msg}" method="POST">
-        <input type="text" id="message" placeholder="escribe a este usuario" />
-        <button id="sendmsg" class="btn btn-secondary" type="submit">Enviar</button>
-      </form>
-    </div>
-  </div>
-  </main> -->
-  </div>
+  <!-- </div> -->
+  <script>
+  </script>
 
   <th:block th:replace="~{fragments/footer.html :: footer}" />
-
   <script th:src="@{/js/ajax-demo.js}"></script>
 </body>
 

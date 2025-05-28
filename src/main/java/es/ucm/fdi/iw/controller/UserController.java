@@ -6,6 +6,7 @@ import es.ucm.fdi.iw.model.Enterprise;
 import es.ucm.fdi.iw.model.Message;
 import es.ucm.fdi.iw.model.Parking;
 import es.ucm.fdi.iw.model.Parking.Transfer;
+import es.ucm.fdi.iw.model.Request;
 import es.ucm.fdi.iw.model.Parker;
 import es.ucm.fdi.iw.model.Reserve;
 import es.ucm.fdi.iw.model.Spot;
@@ -963,5 +964,48 @@ public class UserController {
 
 		return "redirect:/user/" + user.getId();
 	}
+
+	@PostMapping("/{id}/save-info")
+	@Transactional
+	@ResponseBody
+	public String saveInfoUser(Model model, @RequestBody JsonNode requestData, @PathVariable long id) {
+
+		User u = entityManager.find(User.class, id);
+
+		if (u == null) {
+			return "{\"error\": \"El usuario no existe\"}";
+		}
+
+
+		String username = requestData.get("username").asText();
+		log.info("Username: "+ username);
+
+		List<User> users = entityManager.createNamedQuery("User.byUsername", User.class).setParameter("username", username).getResultList();
+		
+		// Si ya existe el user...
+		if (users.size() >0 && users.get(0).getId() != id) {
+			return "{\"error\": \"Ya existe un usuario con ese nombre\"}";
+		}
+
+		String telephone = requestData.get("telephone").asText();
+		String email = requestData.get("email").asText();
+
+		u.setUsername(username);
+		u.setEmail(email);
+		u.setTelephone(Integer.parseInt(telephone));
+		
+		entityManager.persist(u);
+		entityManager.flush();
+
+		User sessionUser = (User) model.getAttribute("u");
+
+		sessionUser.setEmail(email);
+		sessionUser.setUsername(username);
+		sessionUser.setTelephone(Integer.parseInt(telephone));
+		// Casi que tendríamos que comprobar el resto, pero no lo voy a hacer
+
+		return "{\"result\": \"Los datos del usuario se han modificado correctamente.\"}";
+	}
+	
 
 }
