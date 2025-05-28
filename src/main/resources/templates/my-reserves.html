@@ -58,8 +58,8 @@
                             th:text="${r.price}">Precio</a></td>
                     <td id="fila1"><a class="nav-link" th:href="@{/user/modify-reserve}" href="/user/modify-reserve"
                             th:text="${r.state}">Estado</a></td>
-                    <td id="fila1"><a class="btn btn-primary m-1" th:href="@{/user/modify-reserve}"
-                            href="/user/modify-reserve">Modificar</a>
+                    <td id="fila1"><a class="btn btn-primary m-1"
+                            th:href="@{/user/modify-reserve/{id}(id=${r.id})}">Modificar</a>
                         <a class="btn btn-danger m-1" data-bs-toggle="modal" data-bs-target="#confirmCancelModal"
                             th:attr="data-id=${r.id}">
                             Cancelar
@@ -95,4 +95,3 @@
 <script th:src="@{/js/my-reserves.js}"></script>
 
 </html>
-

@@ -3,10 +3,17 @@ package es.ucm.fdi.iw.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -16,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,11 +34,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import es.ucm.fdi.iw.LocalData;
 import es.ucm.fdi.iw.controller.UserController.NoEsTuPerfilException;
 import es.ucm.fdi.iw.model.User;
+import es.ucm.fdi.iw.model.User.Role;
 import es.ucm.fdi.iw.model.Message.Type;
 import es.ucm.fdi.iw.model.Enterprise;
 import es.ucm.fdi.iw.model.Message;
@@ -41,6 +53,7 @@ import es.ucm.fdi.iw.model.Spot;
 import es.ucm.fdi.iw.model.Transferable;
 import es.ucm.fdi.iw.model.Parking;
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -88,11 +101,11 @@ public class EnterpriseController {
     }
 
     /**
-	 * Muestra los parkings de la empresa.
+     * Muestra los parkings de la empresa.
      * 
-	 * @param model    Modelo para la vista.
-	 * @return Carga la vista de los parkings de la empresa.
-	 */
+     * @param model Modelo para la vista.
+     * @return Carga la vista de los parkings de la empresa.
+     */
     @GetMapping("/parkings")
     public String enterpriseParkings(Model model) {
         User user = (User) model.getAttribute("u");
@@ -251,7 +264,7 @@ public class EnterpriseController {
             message.setDateSent(LocalDateTime.now());
             message.setText(notificationText);
             message.setType(Type.MOSTRAR);
-            
+
             entityManager.persist(message);
 
             // Convertir el mensaje a JSON y enviarlo
@@ -348,5 +361,75 @@ public class EnterpriseController {
                 .getSingleResult();
         session.setAttribute("unread", unread);
         return "{\"unread\": " + unread + "}";
+    }
+
+    /**
+     * Returns the default profile pic
+     * 
+     * @return
+     */
+    private static InputStream defaultPic() {
+        return new BufferedInputStream(Objects.requireNonNull(
+                UserController.class.getClassLoader().getResourceAsStream(
+                        "static/img/default-pic.jpg")));
+    }
+
+    /**
+     * Descarga la imagen de perfil de un usuario.
+     *
+     * @param id ID del usuario.
+     * @return Cuerpo de respuesta con el flujo de la imagen.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     */
+    @GetMapping("{id}/pic")
+    public StreamingResponseBody getPic(@PathVariable long id) throws IOException {
+        File f = localData.getFile("enterprise", "" + id + ".jpg");
+        InputStream in = new BufferedInputStream(
+                f.exists() ? new FileInputStream(f) : EnterpriseController.defaultPic());
+        return os -> FileCopyUtils.copy(in, os);
+    }
+
+    /**
+     * Sube una nueva imagen de perfil para un usuario.
+     *
+     * @param photo    Archivo de la imagen.
+     * @param id       ID del usuario.
+     * @param response Respuesta HTTP.
+     * @param session  Sesión HTTP del usuario.
+     * @param model    Modelo para la vista.
+     * @return Respuesta JSON con el estado de la subida.
+     * @throws IOException           Si ocurre un error de entrada/salida.
+     * @throws NoEsTuPerfilException Si el usuario no tiene permisos.
+     */
+    @PostMapping("{id}/pic")
+    @ResponseBody
+    public String setPic(@RequestParam("photo") MultipartFile photo, @PathVariable long id,
+            HttpServletResponse response, HttpSession session, Model model) throws IOException {
+
+        User target = entityManager.find(User.class, id);
+        model.addAttribute("user", target);
+
+        // check permissions
+        User requester = (User) session.getAttribute("u");
+        if (requester.getId() != target.getId() &&
+                !requester.hasRole(Role.ADMIN)) {
+            throw new NoEsTuPerfilException();
+        }
+
+        log.info("Updating photo for user {}", id);
+        File f = localData.getFile("enterprise", "" + id + ".jpg");
+        if (photo.isEmpty()) {
+            log.info("failed to upload photo: emtpy file?");
+        } else {
+            try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(f))) {
+                byte[] bytes = photo.getBytes();
+                stream.write(bytes);
+                log.info("Uploaded photo for {} into {}!", id, f.getAbsolutePath());
+            } catch (Exception e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                log.warn("Error uploading " + id + " ", e);
+            }
+        }
+        return "{\"status\":\"photo uploaded correctly\"}";
     }
 }

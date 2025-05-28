@@ -497,9 +497,121 @@ public class UserController {
 	 * @param model Modelo para la vista.
 	 * @return Nombre de la vista "modify-reserve".
 	 */
-	@GetMapping("/modify-reserve")
-	public String modifyReserve(Model model) {
+	@GetMapping("/modify-reserve/{id}")
+	public String modifyReserve(@PathVariable Long id, Model model) {
+		Parker parker = (Parker) model.getAttribute("u");
+		List<Vehicle> vehicles = entityManager
+				.createQuery("SELECT v FROM Vehicle v WHERE v.parker.id = :parkerId", Vehicle.class)
+				.setParameter("parkerId", parker.getId())
+				.getResultList();
+
+		Reserve reserve = entityManager.find(Reserve.class, id);
+
+		Parking parking = reserve.getSpot().getParking();
+
+		model.addAttribute("parking", reserve.getSpot().getParking().toTransfer());
+		model.addAttribute("reserve", reserve);
+		model.addAttribute("id", id);
+		model.addAttribute("feePerHour", reserve.getPrice());
+		model.addAttribute("startDate", reserve.getStartDate());
+		model.addAttribute("endDate", reserve.getEndDate());
+		model.addAttribute("startTime", reserve.getStartTime());
+		model.addAttribute("endTime", reserve.getEndTime());
+		model.addAttribute("vehicleId", reserve.getVehicle().getId());
+		model.addAttribute("vehicles", vehicles);
+		model.addAttribute("spots", parking.getSpots());
+		model.addAttribute("selectedSlot", reserve.getSpot().getId());
+
 		return "modify-reserve";
+	}
+
+	@PostMapping("/confirm-modify-reserve")
+	@Transactional
+	public String postModifyReserve(
+			@ModelAttribute("startDate") LocalDate startDate,
+			@ModelAttribute("endDate") LocalDate endDate,
+			@ModelAttribute("startTime") LocalTime startTime,
+			@ModelAttribute("endTime") LocalTime endTime,
+			@RequestParam("vehicleId") Long vehicleId,
+			@RequestParam("parkingId") Long parkingId,
+			@RequestParam("reserveId") Long id,
+			@RequestParam("totalPrice") Double totalPrice,
+			@RequestParam("selectedParkingSpot") Integer selectedParkingSpot,
+			Model model,
+			RedirectAttributes redirectAttributes) {
+
+		User user = (User) model.getAttribute("u");
+		User target = entityManager.find(User.class, user.getId());
+		if (!(user instanceof Parker parker)) {
+			redirectAttributes.addFlashAttribute("error", "No eres un parker válido.");
+			return "redirect:/error";
+		}
+
+		if (startDate == null || endDate == null || startTime == null || endTime == null || vehicleId == null
+				|| totalPrice == null) {
+			redirectAttributes.addFlashAttribute("error", "Faltan campos por rellenar");
+			return "redirect:/user/modify-reserve/" + id;
+		}
+		if (startDate.isAfter(endDate) || (startDate.isEqual(endDate) && startTime.isAfter(endTime))) {
+			redirectAttributes.addFlashAttribute("error", "La fecha de inicio no puede ser posterior a la de fin");
+			return "redirect:/user/modify-reserve/" + id;
+		}
+
+		Vehicle vehicle = entityManager.find(Vehicle.class, vehicleId);
+		if (vehicle == null) {
+			redirectAttributes.addFlashAttribute("error", "Vehículo no válido");
+			return "redirect:/user/modify-reserve/" + id;
+
+		}
+		Long spotId = selectedParkingSpot.longValue();
+		Spot spot = entityManager.find(Spot.class, spotId);
+		if (spot == null) {
+			redirectAttributes.addFlashAttribute("error", "Plaza no válida");
+			return "redirect:/user/modify-reserve/" + id;
+		}
+
+		List<Reserve> reservas = entityManager
+				.createQuery("SELECT r FROM Reserve r WHERE r.spot = :spot", Reserve.class)
+				.setParameter("spot", spot)
+				.getResultList();
+		for (Reserve r : reservas) {
+			if ((r.getStartDate().isBefore(endDate) && r.getEndDate().isAfter(startDate)) ||
+					(r.getStartDate().isEqual(startDate) && r.getStartTime().isBefore(endTime)) ||
+					(r.getEndDate().isEqual(endDate) && r.getEndTime().isAfter(startTime))) {
+
+				redirectAttributes.addFlashAttribute("error", "No se puede reservar esta plaza en esas fechas y horas");
+				return "redirect:/user/modify-reserve/" + id;
+			}
+		}
+
+		Reserve reserve = entityManager.find(Reserve.class, id);
+		reserve.setStartDate(startDate);
+		reserve.setEndDate(endDate);
+		reserve.setStartTime(startTime);
+		reserve.setEndTime(endTime);
+		reserve.setPrice(totalPrice);
+		reserve.setState(Reserve.State.PENDING);
+		reserve.setSpot(spot);
+		reserve.setVehicle(vehicle);
+
+		try {
+			entityManager.persist(reserve);
+			entityManager.flush();
+			entityManager.clear();
+			double wallet = user.getWallet();
+			wallet -= totalPrice;
+			user.setWallet(wallet);
+			User userBD = entityManager.find(User.class, user.getId());
+			userBD.setWallet(wallet);
+			// avisamos a la empresa
+			notificarReserva(target, reserve, spot.getParking());
+			model.addAttribute("success", "Reserva realizada con éxito");
+		} catch (Exception e) {
+			model.addAttribute("error", "Hubo un error al guardar la reserva: " + e.getMessage());
+			return "redirect:/error";
+		}
+
+		return myReserves(model);
 	}
 
 	/**

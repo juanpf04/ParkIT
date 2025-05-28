@@ -57,13 +57,11 @@
                             </li>
 
                             <li class="nav-link ">
-                                <a class="nav-link" th:if="${u.hasRole('ENTERPRISE')}"
-                                    th:href="@{/enterprise/requests}"
+                                <a class="nav-link" th:if="${u.hasRole('ENTERPRISE')}" th:href="@{/enterprise/requests}"
                                     href="/enterprise/requests">Mis solicitudes</a>
                             </li>
                             <li class="nav-link ">
-                                <a class="nav-link" th:if="${u.hasRole('ENTERPRISE')}"
-                                    th:href="@{/enterprise/parkings}"
+                                <a class="nav-link" th:if="${u.hasRole('ENTERPRISE')}" th:href="@{/enterprise/parkings}"
                                     href="/enterprise/parkings">Ver parkings</a>
                             </li>
                             <li class="nav-link ">
@@ -89,7 +87,7 @@
                             <li class="nav-link ">
                                 <a class="nav-link" th:if="${u.hasRole('ENTERPRISE')}"
                                     th:href="@{/enterprise/{id}(id=${u.id})}">
-                                    <img class="iwthumb rounded" th:src="@{/user/{id}/pic(id=${u.id})}">
+                                    <img class="iwthumb rounded" th:src="@{/enterprise/{id}/pic(id=${u.id})}">
                                     <span th:text="${u.username}">Pepe</span>
                                 </a>
                                 <a class="nav-link" th:if="${u.hasRole('USER')}" th:href="@{/user/{id}(id=${u.id})}">
@@ -184,8 +182,7 @@
                         <li><a class="nav-link btn btn-outline-secondary pt-1" th:if="${u.hasRole('USER')}"
                                 th:href="@{/user/map}" href="/user/map">Buscar</a></li>
                         <li><a class="nav-link btn btn-outline-secondary pt-1" th:if="${u.hasRole('ENTERPRISE')}"
-                                th:href="@{/enterprise/requests}"
-                                href="/enterprise/requests">Mis solicitudes</a>
+                                th:href="@{/enterprise/requests}" href="/enterprise/requests">Mis solicitudes</a>
                         </li>
                         <li><a class="nav-link btn btn-outline-secondary pt-1" th:if="${u.hasRole('ENTERPRISE')}"
                                 th:href="@{/enterprise/parkings}" href="/enterprise/parkings">Ver
@@ -205,7 +202,7 @@
                         <li class="nav-link btn pt-1">
                             <a class="nav-link" th:if="${u.hasRole('ENTERPRISE')}"
                                 th:href="@{/enterprise/{id}(id=${u.id})}">
-                                <img class="iwthumb rounded" th:src="@{/user/{id}/pic(id=${u.id})}">
+                                <img class="iwthumb rounded" th:src="@{/enterprise/{id}/pic(id=${u.id})}">
                                 <span th:text="${u.username}">Pepe</span>
                             </a>
                             <a class="nav-link" th:if="${u.hasRole('USER')}" th:href="@{/user/{id}(id=${u.id})}">
