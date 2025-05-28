@@ -299,61 +299,58 @@ public class UserController {
 	/**
 	 * Añade un vehículo al usuario y redirige a la página de reserva.
 	 *
-	 * @param model              Modelo para la vista.
-	 * @param session            Sesión HTTP del usuario.
-	 * @param parkingId          ID del parking (opcional).
-	 * @param selectedSlot       Plaza seleccionada (opcional).
-	 * @param vehicleId          ID del vehículo seleccionado (opcional).
-	 * @param startDate          Fecha de inicio de la reserva (opcional).
-	 * @param endDate            Fecha de fin de la reserva (opcional).
-	 * @param startTime          Hora de inicio de la reserva (opcional).
-	 * @param endTime            Hora de fin de la reserva (opcional).
-	 * @param brand              Marca del vehículo.
-	 * @param modelo             Modelo del vehículo.
-	 * @param plate              Matrícula del vehículo.
-	 * @param size               Tamaño del vehículo.
-	 * @param redirectAttributes Atributos para la redirección.
+	 * @param model   Modelo para la vista.
+	 * @param session Sesión HTTP del usuario.
 	 * @return Nombre de la vista "reserve" o "login" si no está autenticado como
 	 *         Parker.
 	 */
-	@GetMapping("/add-vehicle")
+	@PostMapping("/add-vehicle")
+	@Transactional
+	@ResponseBody
 	public String addVehicle(
 			Model model,
 			HttpSession session,
-			@RequestParam(required = false) String parkingId,
-			@RequestParam(required = false) Integer selectedSlot,
-			@RequestParam(required = false) Long vehicleId,
-			@RequestParam @Nullable String startDate, @RequestParam @Nullable String endDate,
-			@RequestParam @Nullable String startTime, @RequestParam @Nullable String endTime,
-			@RequestParam String brand,
-			@RequestParam String modelo,
-			@RequestParam String plate,
-			@RequestParam String size,
-			RedirectAttributes redirectAttributes) {
-		Long id = Long.parseLong(parkingId);
-		// redirectAttributes.addAttribute("selectedSlot", selectedSlot);
-		// redirectAttributes.addAttribute("startDate", startDate);
-		// redirectAttributes.addAttribute("endDate", endDate);
-		// redirectAttributes.addAttribute("startTime", startTime);
-		// redirectAttributes.addAttribute("endTime", endTime);
-		// redirectAttributes.addAttribute("id", id);
-		// redirectAttributes.addAttribute("vehicleId", vehicleId);
-		if (isParker(session)) {
-			Parker parker = (Parker) session.getAttribute("u");
-			List<Vehicle> vehicles = parker.getVehicles();
-			Vehicle v = new Vehicle();
-			v.setBrand(brand);
-			v.setEnabled(true);
-			v.setModel(modelo);
-			v.setPlate(plate);
-			v.setSize(size);
-			v.setParker(parker);
-			vehicles.add(v);
-			parker.setVehicles(vehicles);
-			entityManager.persist(v);
-			return reserve(model, session, id, selectedSlot, vehicleId, startDate, endDate, startTime, endTime);
-		} else
-			return "login";
+			@RequestBody JsonNode requestData) {
+
+		try {
+			String brand = requestData.get("brand").asText();
+			String modelo = requestData.get("modelo").asText();
+			String plate = requestData.get("plate").asText();
+			String size = requestData.get("size").asText();
+
+			if (isParker(session)) {
+				Parker parker = (Parker) session.getAttribute("u");
+				// List<Vehicle> vehicles = parker.getVehicles();
+				// log.info(vehicles);
+				List<Vehicle> vExistente = entityManager.createNamedQuery("Vehicle.findByplate")
+						.setParameter("plate", plate)
+						.getResultList();
+
+				if (vExistente.size() > 0) {
+					model.addAttribute("error", "La matrícula ya existe");
+					return "{\"error\": \"Ya existe un vehículo con esa matrícula\"}";
+				}
+
+				Vehicle v = new Vehicle();
+
+				v.setBrand(brand);
+				v.setEnabled(true);
+				v.setModel(modelo);
+				v.setPlate(plate);
+				v.setSize(size);
+				v.setParker(parker);
+
+				log.info("añadiendo vehiculo " + v.getPlate());
+
+				entityManager.persist(v);
+				return "{\"result\": \"Vehículo creado con éxito\"}";
+			} else
+				return "login";
+
+		} catch (Exception e) {
+			log.error("Error al procesar la solicitud", e);
+			return "{\"error\": \"Error al procesar la solicitud\"}";
+		}
 	}
 
 	/**

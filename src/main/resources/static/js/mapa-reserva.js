@@ -89,8 +89,23 @@ document.addEventListener("DOMContentLoaded", function () {
         let model = document.getElementById("model").value;
         let plate = document.getElementById("plate").value;
         let size = document.getElementById("size").value;
-        window.location.href = `/user/add-vehicle?&parkingId=${id}&startDate=${startDate}&endDate=${endDate}&startTime=${startTime}&endTime=${endTime}&vehicleId=${vehicleId}&selectedSlot=${selectedSlot}&brand=${brand}&modelo=${model}&plate=${plate}&size=${size}`;
-        
+        // window.location.href = `/user/add-vehicle?&parkingId=${id}&startDate=${startDate}&endDate=${endDate}&startTime=${startTime}&endTime=${endTime}&vehicleId=${vehicleId}&selectedSlot=${selectedSlot}&brand=${brand}&modelo=${model}&plate=${plate}&size=${size}`;
+        // Ejemplo de GO
+        go("/user/add-vehicle", 'POST', {
+            brand: brand,
+            modelo: model,
+            plate: plate,
+            size: size
+        }).then(function (response) {
+            if (response.result) {
+                window.location.href = `/user/reserve/${id}?&startDate=${startDate}&endDate=${endDate}&startTime=${startTime}&endTime=${endTime}&vehicleId=${vehicleId}&selectedSlot=${selectedSlot}`;
+            } else if (response.error) {
+                let errorDiv = document.getElementById("error");
+                errorDiv.textContent = response.error;
+            }
+        }).catch(function (error) {
+            console.error('Error:', error);
+        });
     });
 });
 
