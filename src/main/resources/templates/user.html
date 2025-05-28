@@ -134,6 +134,10 @@
             divSuccess.classList.remove("d-none");
             divSuccess.innerHTML = response.result;
 
+            var navId = document.getElementById("navId");
+            console.log(navId.value);
+            navId.innerHTML = usuario;
+
             setTimeout(() => {
               divSuccess.classList.add("d-none");
             }, 5000); 
