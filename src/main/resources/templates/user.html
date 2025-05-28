@@ -21,108 +21,145 @@
       <div class="card-body p-4">
         <h4 class="text-center">Datos personales</h4>
 
-        <form action="post">
-          <div class="mb-3">
-            <label for="usuario" class="mb-2">Usuario</label>
-            <input type="text" th:value="${u.username}" class="form-control" name="usuario" id="usuario"
-              aria-describedby="usuarioId" placeholder="" disabled>
-          </div>
+        <div class="mb-3">
+          <label for="usuario" class="mb-2">Usuario</label>
+          <input type="text" th:value="${u.username}" class="form-control" name="usuario" id="usuario"
+            aria-describedby="usuarioId" placeholder="" disabled>
+        </div>
 
-          <div class="mb-3">
-            <label for="telefono" class="mb-2">Telefono</label>
-            <input type="text" th:value="telefono" class="form-control" name="telefono" id="telefono"
-              aria-describedby="telefonoId" placeholder="" disabled>
-          </div>
+        <div class="mb-3">
+          <label for="telefono" class="mb-2">Telefono</label>
+          <input type="text" th:value="${u.telephone}" class="form-control" name="telefono" id="telefono"
+            aria-describedby="telefonoId" placeholder="" disabled>
+        </div>
 
-          <div class="mb-3">
-            <label for="correo" class="mb-2">Correo</label>
-            <input type="text" th:value="correo" class="form-control" name="correo" id="correo"
-              aria-describedby="usuarioId" placeholder="" disabled>
-          </div>
+        <div class="mb-3">
+          <label for="correo" class="mb-2">Correo</label>
+          <input type="text" th:value="${u.email}" class="form-control" name="correo" id="correo"
+            aria-describedby="usuarioId" placeholder="" disabled>
+        </div>
 
-          <div class="row mb-3">
-            <div class="col">
-              <button type="button" class="btn btn-outline-dark w-100">Editar datos</button>
-            </div>
-            <div class="col">
-              <button class="btn btn-outline-dark w-100" type="submit" disabled>Guardar</button>
-            </div>
-          </div>
-        </form>
+        <input type="hidden" id="userId" th:value="${u.id}">
 
         <div class="row mb-3">
-            <div class="col">
-              <button class="btn btn-outline-dark w-100" type="button" data-bs-toggle="modal" data-bs-target="#modalSaldo">Cargar Saldo</button>
+          <div class="col">
+            <button type="button" id="btn-editar" class="btn btn-outline-dark w-100">Editar datos</button>
+          </div>
+          <div class="col">
+            <button class="btn btn-outline-dark w-100" id="btn-guardar" disabled>Guardar</button>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <button class="btn btn-outline-dark w-100" type="button" data-bs-toggle="modal"
+              data-bs-target="#modalSaldo">Cargar Saldo</button>
+          </div>
+        </div>
+
+        <div class="alert alert-success d-none" id="success"></div>
+        <div class="alert alert-danger d-none" id="error"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ejemplo de modal -->
+  <div class="modal fade" id="modalSaldo" tabindex="-1" aria-labelledby="modalSaldoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4 shadow">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalSaldoLabel">Cargar saldo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formCargarSaldo" method="post" th:action="@{'/user/' + ${u.id} + '/cargar-saldo'}">
+            <div class="mb-3">
+              <label for="monto" class="form-label">Monto a cargar</label>
+              <input type="number" class="form-control" id="monto" name="monto" min="1" required>
             </div>
+            <div class="text-end">
+              <button type="submit" class="btn btn-primary">Confirmar</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
 
-<!-- Ejemplo de modal -->
-<div class="modal fade" id="modalSaldo" tabindex="-1" aria-labelledby="modalSaldoLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content rounded-4 shadow">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalSaldoLabel">Cargar saldo</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        <form id="formCargarSaldo" method="post" th:action="@{'/user/' + ${u.id} + '/cargar-saldo'}">
-          <div class="mb-3">
-            <label for="monto" class="form-label">Monto a cargar</label>
-            <input type="number" class="form-control" id="monto" name="monto" min="1" required>
-          </div>
-          <div class="text-end">
-            <button type="submit" class="btn btn-primary">Confirmar</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-  <!-- <main class="flex-shrink-0">
-    <div id="books" class="border border-2 border-primary rounded">
-      <label for="isbn">ISBN</label><input id="isbn" value="9780140328721" />
-
-  <button id="fetchBook">Buscar datos online</button>
-  <img class="preview" id="portada" alt="portada del libro" />
-  <form th:action="@{/user/__${user.id}__/pic}">
-    <button id="postPortada" class="perfilable">Usar como foto de perfil</button>
-  </form>
-  </div>
-  <div id="movies" class="border border-2 border-secondary rounded">
-    <label for="imdb">IMDB</label><input id="imdb" value="tt11286314" />
-    <button id="fetchMovie">Buscar datos online</button>
-    <img class="preview" id="poster" alt="poster de la pelicula" />
-    <form th:action="@{/user/__${user.id}__/pic}">
-      <button id="postPoster" class="perfilable">Usar como foto de perfil</button>
-    </form>
-  </div>
-
-
-  <div class="container">
-    <h1 class="mt-5">Perfil de <span th:text="${user.username}">Paco</span></h1>
-    recepción de mensajes
-    <div class="py-5 row" id="mensajes">
-    </div>
-    envío de mensajes
-    <div class="py-5 row">
-      <form th:action="@{/user/__${user.id}__/msg}" method="POST">
-        <input type="text" id="message" placeholder="escribe a este usuario" />
-        <button id="sendmsg" class="btn btn-secondary" type="submit">Enviar</button>
-      </form>
-    </div>
-  </div>
-  </main> -->
-  </div>
-
   <th:block th:replace="~{fragments/footer.html :: footer}" />
 
   <script th:src="@{/js/ajax-demo.js}"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var editBtn = document.getElementById("btn-editar");
+      var saveBtn = document.getElementById("btn-guardar");
+      var username = document.getElementById("usuario");
+      var telephone = document.getElementById("telefono");
+      var email = document.getElementById("correo");
+      var userId = document.getElementById("userId");
+
+
+      editBtn.addEventListener("click", function () {
+        username.disabled = false;
+        telephone.disabled = false;
+        email.disabled = false;
+        saveBtn.disabled = false;
+      });
+
+
+      saveBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        let id = userId.value;
+        let usuario = username.value;
+        let telefono = telephone.value;
+        let correo = email.value;
+
+        console.log("entraaaaaa");
+        console.log(id);
+        console.log(usuario);
+        console.log(telefono);
+        console.log(correo);
+
+        go(`/user/${id}/save-info`, 'POST', {
+          usuario: usuario,
+          telefono: telefono,
+          correo: correo
+        }).then(function (response) {
+          if (response.result) {
+            var divSuccess = document.getElementById("success");
+
+            divSuccess.classList.remove("d-none");
+            divSuccess.innerHTML = response.result;
+
+            setTimeout(() => {
+              divSuccess.classList.add("d-none");
+            }, 5000); 
+          } else if (response.error) {
+            var divError = document.getElementById("error");
+
+            divError.innerHTML = response.error;
+            divError.classList.remove("d-none");
+
+            setTimeout(() => {
+              divError.classList.add("d-none");
+            }, 5000); 
+          }
+
+          username.disabled = true;
+          telephone.disabled = true;
+          email.disabled = true;
+          saveBtn.disabled = true;
+
+        }).catch(function (error) {
+          console.error('Error:', error);
+        });
+      });
+    });
+
+  </script>
 </body>
 
 </html>

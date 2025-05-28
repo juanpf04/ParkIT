@@ -372,7 +372,7 @@ public class UserController {
 			m.setRecipient(enterprise);
 			m.setSender(user);
 			m.setDateSent(LocalDateTime.now());
-			
+
 			ObjectMapper mapper = new ObjectMapper();
 			// Ejemplo de pasar un JSON como cuerpo del mensaje
 			m.setText(mapper.writeValueAsString(reserve.toTransfer()));
@@ -854,11 +854,11 @@ public class UserController {
 	}
 
 	/**
-     * Devuelve el número de mensajes no leídos en formato JSON.
-     *
-     * @param session Sesión HTTP del usuario.
-     * @return JSON con el número de mensajes no leídos.
-     */
+	 * Devuelve el número de mensajes no leídos en formato JSON.
+	 *
+	 * @param session Sesión HTTP del usuario.
+	 * @return JSON con el número de mensajes no leídos.
+	 */
 	@GetMapping(path = "unread", produces = "application/json")
 	@ResponseBody
 	public String checkUnread(HttpSession session) {
@@ -871,15 +871,15 @@ public class UserController {
 	}
 
 	/**
-     * Envía un mensaje a un usuario.
-     *
-     * @param id ID del usuario destinatario.
-     * @param o Nodo JSON con el contenido del mensaje.
-     * @param model Modelo para la vista.
-     * @param session Sesión HTTP del usuario.
-     * @return Respuesta JSON con el estado del envío.
-     * @throws JsonProcessingException Si ocurre un error al serializar el mensaje.
-     */
+	 * Envía un mensaje a un usuario.
+	 *
+	 * @param id      ID del usuario destinatario.
+	 * @param o       Nodo JSON con el contenido del mensaje.
+	 * @param model   Modelo para la vista.
+	 * @param session Sesión HTTP del usuario.
+	 * @return Respuesta JSON con el estado del envío.
+	 * @throws JsonProcessingException Si ocurre un error al serializar el mensaje.
+	 */
 	@PostMapping("/{id}/msg")
 	@ResponseBody
 	@Transactional
@@ -924,14 +924,14 @@ public class UserController {
 	}
 
 	/**
-     * Añade saldo a la cartera del usuario.
-     *
-     * @param id ID del usuario.
-     * @param session Sesión HTTP del usuario.
-     * @param model Modelo para la vista.
-     * @param monto Cantidad a añadir.
-     * @return Redirección al perfil del usuario.
-     */
+	 * Añade saldo a la cartera del usuario.
+	 *
+	 * @param id      ID del usuario.
+	 * @param session Sesión HTTP del usuario.
+	 * @param model   Modelo para la vista.
+	 * @param monto   Cantidad a añadir.
+	 * @return Redirección al perfil del usuario.
+	 */
 	@PostMapping("/{id}/cargar-saldo")
 	@Transactional
 	public String cargarSaldo(@PathVariable long id, HttpSession session, Model model,
@@ -947,6 +947,34 @@ public class UserController {
 		}
 
 		return "redirect:/user/" + user.getId();
+	}
+
+	@PostMapping("/{id}/save-info")
+	@Transactional
+	@ResponseBody
+	public String guardarDatos(@PathVariable long id, @RequestBody JsonNode requestData, Model model) {
+
+		User user = entityManager.find(User.class, id);
+		if (user == null) {
+			return "{\"error\": \"Error al procesar la solicitud\"}";
+		}
+
+		String usuario = requestData.get("usuario").asText();
+		String telefono = requestData.get("telefono").asText();
+		String correo = requestData.get("correo").asText();
+
+		user.setUsername(usuario);
+		user.setTelephone(Integer.parseInt(telefono));
+		user.setEmail(correo);
+
+		entityManager.persist(user);
+
+		User sessionUser = (User) model.getAttribute("u");
+		sessionUser.setUsername(usuario);
+		sessionUser.setTelephone(Integer.parseInt(telefono));
+		sessionUser.setEmail(correo);
+
+		return "{\"result\": \"Datos guardados correctamente\"}";
 	}
 
 }
