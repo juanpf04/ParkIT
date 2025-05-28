@@ -86,6 +86,12 @@
                                 </a>
                             </li>
 
+                            <li class="nav-link align-self-center">
+                                <a class="nav-link" th:if="${u.hasRole('ENTERPRISE')}" th:href="@{/enterprise/{id}(id=${u.id})}">
+                                    <span>Saldo: <span th:text="${u.wallet}"></span> €</span>
+                                </a>
+                            </li>
+
                             <li class="nav-link ">
                                 <a class="nav-link" th:if="${u.hasRole('ENTERPRISE')}"
                                     th:href="@{/enterprise/{id}(id=${u.id})}">
