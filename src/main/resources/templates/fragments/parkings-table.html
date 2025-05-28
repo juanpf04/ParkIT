@@ -10,7 +10,8 @@
             <th></th>
         </tr>
         </thead>
-        <tbody>
+        
+        <tbody id="parkings-table">
         
         <tr th:each="parking : ${parkings}">
             <th th:text="${parking.name}">Nombre</th>

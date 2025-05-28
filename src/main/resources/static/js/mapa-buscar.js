@@ -155,23 +155,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('buscador').appendChild(geocoderContainer);
 
     document.getElementById('customRange3').addEventListener('input', function () {
-        radius = parseInt(this.value);
-
-        document.getElementById('rangeValue').innerHTML = radius;
-
-        setCircle();
-
-        // Double radio = 30.0; 
-			// double lat, lon;
-			// List<Parking> parkingsInRange;
-			// if (latitude == null || longitude == null || latitude == "" || longitude == "") {
-			// 	parkingsInRange = parkings;
-			// } else {
-			// 	lat = Double.parseDouble(latitude);
-			// 	lon = Double.parseDouble(longitude);
-			// 	parkingsInRange = parkings.stream()
-			// 			.filter(p -> calcularDistancia(lat, lon, p.getLatitude(), p.getLongitude()) <= radio)
-			// 			.collect(Collectors.toList());
-			// }
+        
     });
 });

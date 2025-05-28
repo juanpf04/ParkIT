@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
             Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
+        return R * c * 1000;
     }
 
     // Función personalizada para buscar marcadores por nombre
@@ -79,6 +79,9 @@ document.addEventListener('DOMContentLoaded', function () {
         L.marker(latlng, { icon: myLocationIcon }).addTo(map).bindTooltip("Tu Ubicación").openTooltip();
         
         setCircle();
+
+        //document.getElementById("latitude").value = latlng[0];
+        //document.getElementById("longitude").value = latlng[1];
 
         parkings.forEach(parking => {
             console.log(latlng[0], latlng[1]);
@@ -156,24 +159,58 @@ document.addEventListener('DOMContentLoaded', function () {
     const geocoderContainer = geocoder.getContainer();
     document.getElementById('buscador').appendChild(geocoderContainer);
 
+    
     document.getElementById('customRange3').addEventListener('input', function () {
         radius = parseInt(this.value);
 
         document.getElementById('rangeValue').innerHTML = radius;
 
-        setCircle();
+        const latitude = document.getElementById("latitude");
+        const longitude = document.getElementById("longitude");
 
-        // Double radio = 30.0; 
-			// double lat, lon;
-			// List<Parking> parkingsInRange;
-			// if (latitude == null || longitude == null || latitude == "" || longitude == "") {
-			// 	parkingsInRange = parkings;
-			// } else {
-			// 	lat = Double.parseDouble(latitude);
-			// 	lon = Double.parseDouble(longitude);
-			// 	parkingsInRange = parkings.stream()
-			// 			.filter(p -> calcularDistancia(lat, lon, p.getLatitude(), p.getLongitude()) <= radio)
-			// 			.collect(Collectors.toList());
-			// }
+        setCircle();
+ 
+		var lat, lon;
+
+		let parkingsInRange;
+
+        console.log("parksss", parkings);
+
+        console.log("lat", latitude.value);
+        
+		if (latitude == null || longitude == null || latitude == "" || longitude == "") {
+			parkingsInRange = parkings;
+		} else {
+		    lat = parseFloat(latitude.value);
+			lon = parseFloat(longitude.value);
+			parkingsInRange = parkings.filter(p => {
+                return calcularDistancia(lat, lon, p.latitude, p.longitude) <= radius;
+            });
+            
+            console.log("Parkings in range:");
+            console.log(parkingsInRange);
+		}
+
+        var tbody = document.getElementById("parkings-table");
+        tbody.innerHTML = "";
+
+        parkingsInRange.forEach(p => {
+            var tr = document.createElement("tr");
+            // Construir la URL manualmente
+            const url = `/user/reserve/${p.id}?startDate=${encodeURIComponent(p.startDate)}&endDate=${encodeURIComponent(p.endDate)}&startTime=${encodeURIComponent(p.startTime)}&endTime=${encodeURIComponent(p.endTime)}`;
+
+            tr.innerHTML = `
+            <th>${p.name}</th>
+            <th>${p.address}</th>
+            <th>${p.feePerHour}</th>
+            <th>${p.openingTime} - ${p.closingTime}</th>
+            <th>
+                <a href="${url}" class="btn btn-primary" parkingId="${p.id}">Reservar</a>
+            </th>`;
+                tbody.appendChild(tr);
+            })
+        
+
+        
     });
 });
